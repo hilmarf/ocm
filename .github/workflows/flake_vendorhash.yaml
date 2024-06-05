@@ -58,9 +58,14 @@ jobs:
           token: ${{ steps.generate_token.outputs.token }}
           commit-message: update vendorHash
           title: Update vendorHash in flake.nix
+          body: |
+            This PR updates the vendorHash in flake.nix.
+            ```bash
+            nix run .#nixpkgs.nix-update -- --flake --version=skip ocm
+            ```          
           branch: nix/flake
           committer: OCMBot <ocmbot@users.noreply.github.com>
-          team-reviewers: ocm-dev
+          # team-reviewers: ocm-dev
           add-paths: |
             flake.nix
             flake.lock
