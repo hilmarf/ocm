@@ -55,9 +55,10 @@ jobs:
           EOF
       - name: Commit
         run: |
+          export GPG_TTY=$(tty)
           diff=$(git diff)
           if [[ ! -z "$diff" ]]; then
-            set -x GPG_TTY (tty) && git commit -S -am "update vendorHash"
+            git commit -S -am "update vendorHash"
           fi
       - name: Create pull request
         id: create_pull_request
