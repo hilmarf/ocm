@@ -79,7 +79,7 @@ jobs:
           export CI_SIGNINGKEY_ID=$( \
             gpg --list-signatures --with-colons \
             | grep 'sig' \
-            | grep ${{ inputs.git-email }} \
+            | grep 'ocmbot@users.noreply.github.com' \
             | head -n 1 \
             | cut -d':' -f5 \
           )
