@@ -95,12 +95,6 @@ jobs:
       - name: Check diff and create action summary
         id: check-diff
         run: |
-          cat << EOF >> gpg-wrapper
-          #!/bin/bash
-          gpg --passphrase "${{ secrets.OCMBOT_SIGNING_KEY_PASS }}" --yes --batch $pflag --pinentry-mode loopback $@ <&0
-          exit $?
-          EOF
-
           diff=$(git diff)
           if [[ -z "$diff" ]]; then
             echo "Everything is tidy."
@@ -123,7 +117,6 @@ jobs:
           echo "body=$(realpath body)" >> "$GITHUB_OUTPUT"
       - name: Commit
         run: |
-          export GPG_PASS=
           cat << EOF >> gpg-wrapper
           #!/bin/bash
           gpg --passphrase "${{ secrets.OCMBOT_SIGNING_KEY_PASS }}" --yes --batch $pflag --pinentry-mode loopback $@ <&0
@@ -132,7 +125,6 @@ jobs:
           chmod +x gpg-wrapper
           git config --global gpg.program "$(realpath gpg-wrapper)"
           git add flake.*
-          git status
           git commit -S -m "update vendorHash"
       - name: Create pull request
         id: create_pull_request
