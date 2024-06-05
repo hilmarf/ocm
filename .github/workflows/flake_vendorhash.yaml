@@ -117,14 +117,10 @@ jobs:
           echo "body=$(realpath body)" >> "$GITHUB_OUTPUT"
       - name: Commit
         run: |
-          export GPG_PASS="${{ secrets.OCMBOT_SIGNING_KEY_PASS }}"
+          export GPG_PASS=
           cat << EOF >> gpg-wrapper
           #!/bin/bash
-          pflag=""
-          if [[ -n "$GPG_PASS" ]]; then 
-            pflag="--passphrase ${GPG_PASS}"
-          fi
-          gpg --yes --batch $pflag --pinentry-mode loopback $@ <&0
+          gpg --passphrase "${{ secrets.OCMBOT_SIGNING_KEY_PASS }}" --yes --batch $pflag --pinentry-mode loopback $@ <&0
           exit $?
           EOF
           chmod +x gpg-wrapper
