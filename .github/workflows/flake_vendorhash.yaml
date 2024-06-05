@@ -42,10 +42,10 @@ jobs:
               mv ${TEMP_GPG_CONF} ~/.gnupg/gpg-agent.conf
             else
               cat << EOF >> ~/.gnupg/gpg-agent.conf
-              allow-preset-passphrase
-              default-cache-ttl 60
-              max-cache-ttl 50
-              EOF
+                allow-preset-passphrase
+                default-cache-ttl 60
+                max-cache-ttl 50
+              EOF 
             fi
             chmod 600 ~/.gnupg/*
             chmod 700 ~/.gnupg
