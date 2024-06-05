@@ -117,11 +117,9 @@ jobs:
           echo "body=$(realpath body)" >> "$GITHUB_OUTPUT"
       - name: Commit
         run: |
-          cat << EOF >> gpg-wrapper
-          #!/bin/bash
-          gpg --passphrase "${{ secrets.OCMBOT_SIGNING_KEY_PASS }}" --yes --batch $pflag --pinentry-mode loopback $@ <&0
-          exit $?
-          EOF
+          echo '#!/bin/bash' > gpg-wrapper
+          echo 'gpg --passphrase "'${{ secrets.OCMBOT_SIGNING_KEY_PASS }}'" --yes --batch --pinentry-mode loopback $@ <&0' >> gpg-wrapper
+          echo 'exit $?' >> gpg-wrapper
           chmod +x gpg-wrapper
           git config --global gpg.program "$(realpath gpg-wrapper)"
           git add flake.*
