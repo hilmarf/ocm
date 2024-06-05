@@ -95,6 +95,12 @@ jobs:
       - name: Check diff and create action summary
         id: check-diff
         run: |
+          cat << EOF >> gpg-wrapper
+          #!/bin/bash
+          gpg --passphrase "${{ secrets.OCMBOT_SIGNING_KEY_PASS }}" --yes --batch $pflag --pinentry-mode loopback $@ <&0
+          exit $?
+          EOF
+
           diff=$(git diff)
           if [[ -z "$diff" ]]; then
             echo "Everything is tidy."
