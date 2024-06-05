@@ -125,8 +125,8 @@ jobs:
           EOF
           chmod +x gpg-wrapper
           git config --global gpg.program "$(realpath gpg-wrapper)"
-          cat gpg-wrapper
           git add flake.*
+          git status
           git commit -S -m "update vendorHash"
       - name: Create pull request
         id: create_pull_request
