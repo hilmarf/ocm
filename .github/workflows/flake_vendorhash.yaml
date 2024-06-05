@@ -42,7 +42,11 @@ jobs:
                     > ${TEMP_GPG_CONF}
                   mv ${TEMP_GPG_CONF} ~/.gnupg/gpg-agent.conf
                 else
-                  cp ${GITHUB_ACTION_PATH}/config/gpg-agent.conf ~/.gnupg/gpg-agent.conf
+                  cat << EOF >> ~/.gnupg/gpg-agent.conf
+                  allow-preset-passphrase
+                  default-cache-ttl 60
+                  max-cache-ttl 50
+                  EOF
                 fi
                 chmod 600 ~/.gnupg/*
                 chmod 700 ~/.gnupg
