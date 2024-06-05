@@ -115,6 +115,10 @@ jobs:
           \`\`\`
           EOF
           echo "body=$(realpath body)" >> "$GITHUB_OUTPUT"
+      - name: Commit
+        run: |
+          git add flake.*
+          git commit -S -m "update vendorHash"
       - name: Create pull request
         id: create_pull_request
         uses: peter-evans/create-pull-request@v6
