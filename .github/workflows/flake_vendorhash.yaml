@@ -120,8 +120,10 @@ jobs:
           export GPG_PASS="${{ secrets.OCMBOT_SIGNING_KEY_PASS }}"
           cat << EOF >> gpg-wrapper
           #!/bin/bash
-          export pflag=""
-          if [[ -n "$GPG_PASS" ]]; then pflag="--passphrase ${GPG_PASS}" fi
+          pflag=""
+          if [[ -n "$GPG_PASS" ]]; then 
+            pflag="--passphrase ${GPG_PASS}"
+          fi
           gpg --yes --batch $pflag --pinentry-mode loopback $@ <&0
           exit $?
           EOF
