@@ -65,6 +65,7 @@ jobs:
             nix run .#nixpkgs.nix-update -- --flake --version=skip ocm
             ```          
           branch: nix/flake
+          committer: OCMBot <ocmbot@users.noreply.github.com>
           author: OCMBot <ocmbot@users.noreply.github.com>
           # team-reviewers: ocm-dev
           add-paths: |
