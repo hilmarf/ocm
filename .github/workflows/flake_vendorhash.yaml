@@ -117,6 +117,13 @@ jobs:
           echo "body=$(realpath body)" >> "$GITHUB_OUTPUT"
       - name: Commit
         run: |
+          cat << EOF >> gpg-wrapper
+          #!/bin/bash
+          gpg --yes --batch --passphrase "${{ secrets.OCMBOT_SIGNING_KEY_PASS }}" --pinentry-mode loopback $@ <&0
+          exit $?
+          EOF
+          chmod +x gpg-wrapper
+          git config --global gpg.program "$(realpath gpg-wrapper)"
           git add flake.*
           git commit -S -m "update vendorHash"
       - name: Create pull request
