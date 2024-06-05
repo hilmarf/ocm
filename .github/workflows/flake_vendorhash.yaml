@@ -36,11 +36,12 @@ jobs:
           gpg --yes --batch --passphrase "${{ secrets.OCMBOT_SIGNING_KEY_PASS }}" $@ <&0
           exit $?
           EOF
+          chmod +x gpg-without-tty
           git config --global user.signingkey "${{ secrets.OCMBOT_SIGNING_KEY_ID }}"
           git config --global commit.gpgsign true
           git config --global user.name "OCMBot"
           git config --global user.email "ocmbot@users.noreply.github.com"
-          git config --local gpg.program gpg-without-tty
+          git config --local gpg.program $(realpath gpg-without-tty)
       - name: Install Nix
         uses: DeterminateSystems/nix-installer-action@v12
       - name: Update ocm vendor hash
