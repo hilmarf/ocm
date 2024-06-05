@@ -83,8 +83,8 @@ jobs:
             | head -n 1 \
             | cut -d':' -f5 \
           )
-          git config --global user.name OCMBot
-          git config --global user.email ocmbot@users.noreply.github.com
+          git config --global user.name ocmbot[bot]
+          git config --global user.email 125909804+ocmbot[bot]@users.noreply.github.com
           git config --global user.signingkey $CI_SIGNINGKEY_ID
           git config --global commit.gpgsign true
           git config --global tag.gpgsign true
@@ -138,8 +138,8 @@ jobs:
             nix run .#nixpkgs.nix-update -- --flake --version=skip ocm
             ```          
           branch: nix/flake
-          committer: OCMBot <ocmbot@users.noreply.github.com>
-          author: OCMBot <ocmbot@users.noreply.github.com>
+          committer: ocmbot[bot] <125909804+ocmbot[bot]@users.noreply.github.com>
+          author: ocmbot[bot] <125909804+ocmbot[bot]@users.noreply.github.com>
           # team-reviewers: ocm-dev
           add-paths: |
             flake.nix
