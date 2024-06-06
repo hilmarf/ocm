@@ -28,64 +28,17 @@ jobs:
           fetch-depth: 0
           token: ${{ steps.generate_token.outputs.token }}
           persist-credentials: false
-      - name: GPG version
-        run: |
-          gpg --version
       - name: Enable GPG signing
-        run: |
-          if [ -f /usr/lib/systemd/user/gpg-agent.service ]; then
-            mkdir -p ~/.gnupg
-            if [ -f ~/.gnupg/gpg-agent.conf ]; then
-              TEMP_GPG_CONF=$(mktemp)
-              # awk magic merging config files together, overriding duplicate
-              awk 'NR==FNR{a[$1];if(NF&&$0!~/^#/) print $0;next} !($1 in a) && $1!~/^#/' \
-                ${GITHUB_ACTION_PATH}/config/gpg-agent.conf \
-                ~/.gnupg/gpg-agent.conf \
-                > ${TEMP_GPG_CONF}
-              mv ${TEMP_GPG_CONF} ~/.gnupg/gpg-agent.conf
-            else
-              echo -e "allow-preset-passphrase\ndefault-cache-ttl 60\nmax-cache-ttl 50" > ~/.gnupg/gpg-agent.conf
-            fi
-            chmod 600 ~/.gnupg/*
-            chmod 700 ~/.gnupg
-            systemctl --user restart gpg-agent
-          else
-            gpg-agent --daemon \
-              --allow-preset-passphrase \
-              --default-cache-ttl 60 \
-              --max-cache-ttl 60
-          fi
-          echo "${{ secrets.OCMBOT_SIGNING_KEY_PASS }}" > passfile
-          echo -n "${{ secrets.OCMBOT_SIGNING_KEY }}" | base64 --decode > signkey
-          gpg --pinentry-mode loopback \
-            --passphrase-file passfile \
-            --import signkey
-          rm passfile signkey
-          GPG_FINGERPRINT=$( \
-            gpg -K --with-fingerprint \
-            | sed -n 4p \
-            | sed -e 's/ *//g' \
-          )
-          echo "${GPG_FINGERPRINT}:6:" | gpg --import-ownertrust
-          GPG_KEYGRIP=`gpg --with-keygrip -K \
-            | sed -n '/[S]/{n;p}' \
-            | sed 's/Keygrip = //' \
-            | sed 's/ *//g'`
-          GPG_PASSPHRASE_HEX=`echo -n "${{ secrets.OCMBOT_SIGNING_KEY_PASS }}" \
-            | od -A n -t x1 \
-            | tr -d ' ' | tr -d '\n'`
-          echo "PRESET_PASSPHRASE $GPG_KEYGRIP -1 $GPG_PASSPHRASE_HEX" \
-            | gpg-connect-agent
-          export CI_SIGNINGKEY_ID=$( \
-            gpg --list-signatures --with-colons \
-            | grep 'sig' \
-            | grep 'ocmbot@users.noreply.github.com' \
-            | head -n 1 \
-            | cut -d':' -f5 \
-          )
+        run: |         
+          echo '#!/bin/bash' > gpg-wrapper
+          echo 'gpg --passphrase "'${{ secrets.OCMBOT_SIGNING_KEY_PASS }}'" --yes --batch --pinentry-mode loopback $@ <&0' >> gpg-wrapper
+          echo 'exit $?' >> gpg-wrapper
+          chmod +x gpg-wrapper
+          echo -n "${{ secrets.OCMBOT_SIGNING_KEY }}" | base64 -d | ./gpg-wrapper --import
+          git config --global gpg.program "$(realpath gpg-wrapper)"
           git config --global user.name ocmbot[bot]
           git config --global user.email 125909804+ocmbot[bot]@users.noreply.github.com
-          git config --global user.signingkey $CI_SIGNINGKEY_ID
+          git config --global user.signingkey ${{ secrets.OCMBOT_SIGNING_KEY_ID }}
           git config --global commit.gpgsign true
           git config --global tag.gpgsign true
       - name: Install Nix
@@ -117,11 +70,6 @@ jobs:
           echo "body=$(realpath body)" >> "$GITHUB_OUTPUT"
       - name: Commit
         run: |
-          echo '#!/bin/bash' > gpg-wrapper
-          echo 'gpg --passphrase "'${{ secrets.OCMBOT_SIGNING_KEY_PASS }}'" --yes --batch --pinentry-mode loopback $@ <&0' >> gpg-wrapper
-          echo 'exit $?' >> gpg-wrapper
-          chmod +x gpg-wrapper
-          git config --global gpg.program "$(realpath gpg-wrapper)"
           git add flake.*
           git commit -S -m "update vendorHash"
       - name: Create pull request
@@ -151,3 +99,7 @@ jobs:
           token: ${{ steps.generate_token.outputs.token }}
           pull-request-number: ${{ steps.create_pull_request.outputs.pull-request-number }}
           merge-method: squash
+      - name: Cleanup
+        if: always()
+        run: |
+          rm -rf gpg-wrapper
