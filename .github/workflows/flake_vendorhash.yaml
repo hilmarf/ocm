@@ -32,10 +32,11 @@ jobs:
         run: nix run .#nixpkgs.nix-update -- --flake --version=skip ocm
       - name: Create pull request
         id: create_pull_request
-        uses: hilmarf/create-pull-request@main
+        uses: peter-evans/create-pull-request@main
         with:
           token: ${{ steps.generate_token.outputs.token }}
           commit-message: update vendorHash
+          author: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
           title: Update vendorHash in flake.nix
           branch: nix/flake
           add-paths: |
