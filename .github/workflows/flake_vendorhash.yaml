@@ -68,7 +68,7 @@ jobs:
           FILE=flake.nix
           BRANCH=${{ github.head_ref }}          
           echo "{\"message\":\"auto update vendor hash\",\"content\":\"$(base64 -w0 ${FILE})\",\"sha\":\"$(git rev-parse :${FILE})\"" > input.json
-          if [[ -z "$BRANCH" ]]; then
+          if [[ -n "$BRANCH" ]]; then
             echo ",\"branch\":\"${{ github.head_ref }}\"" >> input.json
           fi
           echo "}" >> input.json
