@@ -30,7 +30,6 @@ jobs:
           token: ${{ steps.generate_token.outputs.token }}
       - name: Dump github context
         run:   echo "$GITHUB_CONTEXT"
-        shell: bash
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}          
       - name: Enable gh-CLI
@@ -73,4 +72,5 @@ jobs:
             echo ",\"branch\":\"${{ github.head_ref }}\"" >> input.json
           fi
           echo "}" >> input.json
+          cat input.json
           gh api -X PUT https://api.github.com/repos/${{ github.repository }}/contents/${FILE} --input input.json
