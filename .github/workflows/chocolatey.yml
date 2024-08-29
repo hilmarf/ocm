@@ -1,0 +1,39 @@
+name: Publish Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        type: string
+        description: 'Version of the latest release (e.g. v0.42.0)'
+        required: false
+        default: ''
+
+jobs:
+  push-to-chocolatey:
+    name: Update Chocolatey
+    runs-on: windows-latest
+    # runs-on: ubuntu-latest
+    steps:
+    - name: Ensure proper version
+      run: |
+        if (-not "${{ github.event.client_payload.version }}") {
+          if (-not "${{ github.event.inputs.version }}") {
+            Write-Host "Version not provided"
+            exit 1
+          }
+          echo "$env:RELEASE_VERSION=("${{ github.event.inputs.version }}" -replace 'v') >> $env:GITHUB_ENV
+        }
+        else {
+          echo "$env:RELEASE_VERSION=(${{ github.event.client_payload.version }} -replace 'v') >> $env:GITHUB_ENV
+        }
+        Get-Content $env:GITHUB_ENV
+    - name: Choco help
+      uses: crazy-max/ghaction-chocolatey@v3
+      with:
+        args: -h
+    - name: Update Chocolatey package
+      run: |
+        hack/chocolatey/update.ps1
+        choco push ocm-cli.$latestVersion.nupkg --source "'https://push.chocolatey.org/'" --api-key="'$env:CHOCO_API_KEY'"
+        # choco upgrade ocm-cli --version ${{ env.RELEASE_VERSION }} --source https://www.myget.org/F/ocm-cli/api/v2
