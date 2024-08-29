@@ -2,7 +2,6 @@
 
 ### Description
 
-
 The plugin descriptor describes the capabilities of a plugin. It uses the
 following fields:
 
@@ -45,7 +44,7 @@ following fields:
 
   The list of supported downloaders. Downloaders will be used by the
   CLI download command to provide downloaded artifacts in a filesystem format
-  applicable to the type specific tools, regatdless of the format it is stored
+  applicable to the type specific tools, regardless of the format it is stored
   as blob in a component version. Therefore, they can be registered for
   combination of artifact type and optional mime type (describing the actually
   used blob format).
@@ -125,21 +124,28 @@ The following predefined option types can be used:
   - <code>accessRegistry</code>: [*string*] registry base URL
   - <code>accessRepository</code>: [*string*] repository URL
   - <code>accessVersion</code>: [*string*] version for access specification
+  - <code>artifactId</code>: [*string*] maven artifact id
   - <code>body</code>: [*string*] body of a http request
   - <code>bucket</code>: [*string*] bucket name
+  - <code>classifier</code>: [*string*] maven classifier
   - <code>comment</code>: [*string*] comment field value
   - <code>commit</code>: [*string*] git commit id
   - <code>digest</code>: [*string*] blob digest
+  - <code>extension</code>: [*string*] maven extension name
   - <code>globalAccess</code>: [*map[string]YAML*] access specification for global access
+  - <code>groupId</code>: [*string*] maven group id
   - <code>header</code>: [*string:string,string*] http headers
   - <code>hint</code>: [*string*] (repository) hint for local artifacts
   - <code>mediaType</code>: [*string*] media type for artifact blob representation
   - <code>noredirect</code>: [*bool*] http redirect behavior
+  - <code>package</code>: [*string*] npm package name
   - <code>reference</code>: [*string*] reference name
   - <code>region</code>: [*string*] region name
+  - <code>registry</code>: [*string*] npm package registry
   - <code>size</code>: [*int*] blob size
   - <code>url</code>: [*string*] artifact or server url
   - <code>verb</code>: [*string*] http request method
+  - <code>version</code>: [*string*] npm package version
 
 The following predefined value types are supported:
 
@@ -239,7 +245,7 @@ The descriptor for an action has the following fields:
   A list of selectors, for which this action implementation is automatically
   be registered when the plugin is loaded. The selector syntax depends on
   the action type. (For example, the hostname (pattern) for the action
-  <code>oci.repository.prepare</code>). The selectors are eiker directly matched
+  <code>oci.repository.prepare</code>). The selectors are either directly matched
   with action requests or used as regular expression.
 
 - **<code>consumerType</code>** *string* (optional)
@@ -290,10 +296,9 @@ The descriptor for a label merge specification has the following fields:
   The configuration settings used for the algorithm. It may contain nested
   merge specifications.
 
-
 ### Examples
 
-```
+```json
 {
   "version": "v1",
   "pluginName": "test",
@@ -328,7 +333,7 @@ The descriptor for a label merge specification has the following fields:
 
 ### SEE ALSO
 
-##### Parents
+#### Parents
 
 * [plugin](plugin.md)	 &mdash; OCM Plugin
 

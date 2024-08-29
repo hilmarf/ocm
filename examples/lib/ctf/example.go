@@ -7,19 +7,21 @@ import (
 	"github.com/mandelsoft/goutils/finalizer"
 	"github.com/mandelsoft/vfs/pkg/memoryfs"
 
-	"github.com/open-component-model/ocm/pkg/blobaccess"
-	"github.com/open-component-model/ocm/pkg/common/accessio"
-	"github.com/open-component-model/ocm/pkg/common/accessobj"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm/compdesc"
-	metav1 "github.com/open-component-model/ocm/pkg/contexts/ocm/compdesc/meta/v1"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm/repositories/ctf"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm/resourcetypes"
-	"github.com/open-component-model/ocm/pkg/mime"
+	"ocm.software/ocm/api/ocm"
+	"ocm.software/ocm/api/ocm/compdesc"
+	metav1 "ocm.software/ocm/api/ocm/compdesc/meta/v1"
+	resourcetypes "ocm.software/ocm/api/ocm/extensions/artifacttypes"
+	"ocm.software/ocm/api/ocm/extensions/repositories/ctf"
+	"ocm.software/ocm/api/utils/accessio"
+	"ocm.software/ocm/api/utils/accessobj"
+	"ocm.software/ocm/api/utils/blobaccess"
+	"ocm.software/ocm/api/utils/mime"
 )
 
-const COMP = "acme.org/mytestcomponent"
-const VERS = "1.0.0"
+const (
+	COMP = "acme.org/mytestcomponent"
+	VERS = "1.0.0"
+)
 
 func CTFExample() (rerr error) {
 	var finalize finalizer.Finalizer
@@ -68,7 +70,6 @@ func CTFExample() (rerr error) {
 			blobaccess.ForString(mime.MIME_TEXT, "testdata"),
 			"", nil,
 		)
-
 		if err != nil {
 			return errors.Wrapf(err, "cannot add resource")
 		}

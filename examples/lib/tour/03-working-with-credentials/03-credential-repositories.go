@@ -4,12 +4,13 @@ import (
 	"fmt"
 
 	"github.com/mandelsoft/goutils/errors"
-	"github.com/open-component-model/ocm/examples/lib/helper"
-	"github.com/open-component-model/ocm/pkg/contexts/credentials"
-	ociidentity "github.com/open-component-model/ocm/pkg/contexts/credentials/builtin/oci/identity"
-	"github.com/open-component-model/ocm/pkg/contexts/credentials/repositories/dockerconfig"
-	"github.com/open-component-model/ocm/pkg/contexts/oci"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm"
+
+	"ocm.software/ocm/api/credentials"
+	ociidentity "ocm.software/ocm/api/credentials/builtin/oci/identity"
+	"ocm.software/ocm/api/credentials/extensions/repositories/dockerconfig"
+	"ocm.software/ocm/api/oci"
+	"ocm.software/ocm/api/ocm"
+	"ocm.software/ocm/examples/lib/helper"
 )
 
 func UsingCredentialsRepositories(cfg *helper.Config) error {
@@ -54,7 +55,7 @@ func UsingCredentialsRepositories(cfg *helper.Config) error {
 
 	// The docker config is such a case, so we can instruct the
 	// repository to automatically propagate appropriate the consumer id
-	// mappings. This feature is typically enabled by a dedicated specfication
+	// mappings. This feature is typically enabled by a dedicated specification
 	// option.
 
 	// --- begin propagation ---

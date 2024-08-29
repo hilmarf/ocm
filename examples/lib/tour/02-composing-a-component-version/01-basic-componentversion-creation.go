@@ -7,18 +7,18 @@ import (
 	"github.com/mandelsoft/goutils/errors"
 	"github.com/mandelsoft/goutils/finalizer"
 
-	"github.com/open-component-model/ocm/pkg/blobaccess"
-	"github.com/open-component-model/ocm/pkg/common"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm/accessmethods/ociartifact"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm/compdesc"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm/elements"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm/elements/artifactblob/dockermultiblob"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm/elements/artifactblob/textblob"
-	ctfocm "github.com/open-component-model/ocm/pkg/contexts/ocm/repositories/ctf"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm/resourcetypes"
-	"github.com/open-component-model/ocm/pkg/mime"
-	"github.com/open-component-model/ocm/pkg/semverutils"
+	"ocm.software/ocm/api/ocm"
+	"ocm.software/ocm/api/ocm/compdesc"
+	"ocm.software/ocm/api/ocm/elements"
+	"ocm.software/ocm/api/ocm/elements/artifactblob/dockermultiblob"
+	"ocm.software/ocm/api/ocm/elements/artifactblob/textblob"
+	"ocm.software/ocm/api/ocm/extensions/accessmethods/ociartifact"
+	resourcetypes "ocm.software/ocm/api/ocm/extensions/artifacttypes"
+	ctfocm "ocm.software/ocm/api/ocm/extensions/repositories/ctf"
+	"ocm.software/ocm/api/utils/blobaccess"
+	"ocm.software/ocm/api/utils/mime"
+	common "ocm.software/ocm/api/utils/misc"
+	"ocm.software/ocm/api/utils/semverutils"
 )
 
 // setupVersion configures a component version.
@@ -70,7 +70,7 @@ func setupVersion(cv ocm.ComponentVersionAccess) error {
 	// Here, we just use an image provided by the
 	// OCM ecosystem.
 	// Supported access types can be found under
-	// .../pkg/contexts/ocm/accessmethods.
+	// .../api/ocm/extensions/accessmethods.
 	// --- begin setup image access ---
 	acc := ociartifact.New("ghcr.io/open-component-model/ocm/ocm.software/toi/installers/helminstaller/helminstaller:0.4.0")
 	// --- end setup image access ---
@@ -173,8 +173,8 @@ data: some very important data required to understand this component
 		// The above case could also be written as follows:
 		// --- begin setup by access ---
 		res := textblob.ResourceAccess(cv.GetContext(), meta, yamldata,
-			textblob.WithimeType(mime.MIME_YAML))
-		err = cv.SetResourceAccess(res)
+			textblob.WithMimeType(mime.MIME_YAML))
+		err = cv.SetResourceByAccess(res)
 		if err != nil {
 			return errors.Wrapf(err, "cannot add yaml document")
 		}
@@ -207,7 +207,7 @@ data: some very important data required to understand this component
 			fmt.Sprintf("ocmcli-image:%s-linux-arm64", current_version),
 		),
 	)
-	err = cv.SetResourceAccess(res)
+	err = cv.SetResourceByAccess(res)
 	if err != nil {
 		return errors.Wrapf(err, "cannot add ocmcli")
 	}

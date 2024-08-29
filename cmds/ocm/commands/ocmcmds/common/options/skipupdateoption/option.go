@@ -1,14 +1,12 @@
 package skipupdateoption
 
 import (
-	"fmt"
-
 	"github.com/spf13/pflag"
 
-	"github.com/open-component-model/ocm/cmds/ocm/pkg/options"
-	"github.com/open-component-model/ocm/pkg/cobrautils/flag"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm/transfer/transferhandler"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm/transfer/transferhandler/standard"
+	"ocm.software/ocm/api/ocm/tools/transfer/transferhandler"
+	"ocm.software/ocm/api/ocm/tools/transfer/transferhandler/standard"
+	"ocm.software/ocm/api/utils/cobrautils/flag"
+	"ocm.software/ocm/cmds/ocm/common/options"
 )
 
 func From(o options.OptionSetProvider) *Option {
@@ -42,12 +40,12 @@ func (o *Option) AddFlags(fs *pflag.FlagSet) {
 }
 
 func (o *Option) Usage() string {
-	return fmt.Sprintf(`
+	return `
 With the option <code>--no-update</code> existing versions in the target
 repository will not be touched at all. An additional specification of the
 option <code>--overwrite</code> is ignored. By default, updates of
-volative (non-signature-relevant) information is enabled, but the
+volatile (non-signature-relevant) information is enabled, but the
 modification of non-volatile data is prohibited unless the overwrite
 option is given.
-`)
+`
 }

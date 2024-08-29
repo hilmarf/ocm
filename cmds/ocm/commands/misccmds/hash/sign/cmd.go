@@ -10,17 +10,17 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 
-	"github.com/open-component-model/ocm/cmds/ocm/commands/misccmds/names"
-	"github.com/open-component-model/ocm/cmds/ocm/commands/verbs"
-	"github.com/open-component-model/ocm/cmds/ocm/pkg/utils"
-	"github.com/open-component-model/ocm/pkg/contexts/clictx"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm/attrs/signingattr"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm/compdesc"
-	"github.com/open-component-model/ocm/pkg/out"
-	"github.com/open-component-model/ocm/pkg/signing"
-	"github.com/open-component-model/ocm/pkg/signing/handlers/rsa"
-	"github.com/open-component-model/ocm/pkg/signing/signutils"
-	utils2 "github.com/open-component-model/ocm/pkg/utils"
+	clictx "ocm.software/ocm/api/cli"
+	"ocm.software/ocm/api/ocm/compdesc"
+	"ocm.software/ocm/api/ocm/extensions/attrs/signingattr"
+	"ocm.software/ocm/api/tech/signing"
+	"ocm.software/ocm/api/tech/signing/handlers/rsa"
+	"ocm.software/ocm/api/tech/signing/signutils"
+	utils2 "ocm.software/ocm/api/utils"
+	"ocm.software/ocm/api/utils/out"
+	"ocm.software/ocm/cmds/ocm/commands/misccmds/names"
+	"ocm.software/ocm/cmds/ocm/commands/verbs"
+	"ocm.software/ocm/cmds/ocm/common/utils"
 )
 
 var (
@@ -64,6 +64,7 @@ Print the signature for a dedicated digest value.
 		Example: `
 $ ocm sign hash key.priv SHA-256:810ff2fb242a5dee4220f2cb0e6a519891fb67f2f828a6cab4ef8894633b1f50
 `,
+		Annotations: map[string]string{"ExampleCodeStyle": "bash"},
 	}
 }
 
@@ -72,7 +73,6 @@ func (o *Command) AddFlags(set *pflag.FlagSet) {
 	set.StringVarP(&o.pubFile, "publicKey", "", "", "public key certificate file")
 	set.StringVarP(&o.rootFile, "rootCerts", "", "", "root certificates file (deprecated)")
 	set.StringArrayVarP(&o.rootCAs, "ca-cert", "", nil, "additional root certificate authorities (for signing certificates)")
-
 }
 
 func (o *Command) Complete(args []string) error {

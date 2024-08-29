@@ -4,26 +4,28 @@ import (
 	"bytes"
 	"fmt"
 
+	. "github.com/mandelsoft/goutils/testutils"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-	. "github.com/open-component-model/ocm/cmds/ocm/testhelper"
-	. "github.com/open-component-model/ocm/pkg/testutils"
+	. "ocm.software/ocm/cmds/ocm/testhelper"
 
 	"github.com/mandelsoft/goutils/finalizer"
 
-	"github.com/open-component-model/ocm/pkg/common/accessio"
-	"github.com/open-component-model/ocm/pkg/common/accessobj"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm/labels/routingslip"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm/labels/routingslip/types/comment"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm/repositories/ctf"
-	"github.com/open-component-model/ocm/pkg/signing/handlers/rsa"
+	"ocm.software/ocm/api/ocm/extensions/labels/routingslip"
+	"ocm.software/ocm/api/ocm/extensions/labels/routingslip/types/comment"
+	"ocm.software/ocm/api/ocm/extensions/repositories/ctf"
+	"ocm.software/ocm/api/tech/signing/handlers/rsa"
+	"ocm.software/ocm/api/utils/accessio"
+	"ocm.software/ocm/api/utils/accessobj"
 )
 
-const ARCH = "/tmp/ca"
-const VERSION = "v1"
-const COMP = "test.de/x"
-const PROVIDER = "acme.org"
-const OTHER = "a.company.com"
+const (
+	ARCH     = "/tmp/ca"
+	VERSION  = "v1"
+	COMP     = "test.de/x"
+	PROVIDER = "acme.org"
+	OTHER    = "a.company.com"
+)
 
 var _ = Describe("Test Environment", func() {
 	var env *TestEnv
@@ -79,7 +81,6 @@ comment ` + e1a.Timestamp.String() + ` Comment: first entry
 	})
 
 	It("gets single entry", func() {
-
 		buf := bytes.NewBuffer(nil)
 		Expect(env.CatchOutput(buf).Execute("get", "routingslip", "-v", ARCH)).To(Succeed())
 		Expect(buf.String()).To(StringEqualTrimmedWithContext(

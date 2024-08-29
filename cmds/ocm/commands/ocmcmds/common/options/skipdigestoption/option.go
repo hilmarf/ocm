@@ -3,9 +3,9 @@ package skipdigestoption
 import (
 	"github.com/spf13/pflag"
 
-	"github.com/open-component-model/ocm/cmds/ocm/pkg/options"
-	"github.com/open-component-model/ocm/pkg/cobrautils/flag"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm"
+	"ocm.software/ocm/api/ocm"
+	"ocm.software/ocm/api/utils/cobrautils/flag"
+	"ocm.software/ocm/cmds/ocm/common/options"
 )
 
 func From(o options.OptionSetProvider) *Option {
@@ -41,6 +41,6 @@ assure a proper transport behaviour.
 
 func (o *Option) ApplyModificationOption(opts *ocm.ModificationOptions) {
 	if o.flag == nil || o.flag.Changed {
-		ocm.SkipDigest(o.Skip).ApplyModificationOption(opts)
+		ocm.SkipDigest(o.Skip).ApplyModificationOption(opts) //nolint:staticcheck // skip digest still used for tests
 	}
 }

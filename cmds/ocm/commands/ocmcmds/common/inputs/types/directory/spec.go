@@ -5,11 +5,11 @@ import (
 
 	"k8s.io/apimachinery/pkg/util/validation/field"
 
-	"github.com/open-component-model/ocm/cmds/ocm/commands/ocmcmds/common/inputs"
-	"github.com/open-component-model/ocm/cmds/ocm/commands/ocmcmds/common/inputs/cpi"
-	"github.com/open-component-model/ocm/pkg/blobaccess"
-	"github.com/open-component-model/ocm/pkg/blobaccess/dirtree"
-	"github.com/open-component-model/ocm/pkg/utils"
+	"ocm.software/ocm/api/utils"
+	"ocm.software/ocm/api/utils/blobaccess"
+	"ocm.software/ocm/api/utils/blobaccess/dirtree"
+	"ocm.software/ocm/cmds/ocm/commands/ocmcmds/common/inputs"
+	"ocm.software/ocm/cmds/ocm/commands/ocmcmds/common/inputs/cpi"
 )
 
 type Spec struct {
@@ -64,7 +64,7 @@ func (s *Spec) GetBlob(ctx inputs.Context, info inputs.InputResourceInfo) (bloba
 		return nil, "", fmt.Errorf("resource type is dir but a file was provided")
 	}
 
-	access, err := dirtree.BlobAccessForDirTree(inputPath,
+	access, err := dirtree.BlobAccess(inputPath,
 		dirtree.WithMimeType(s.MediaType),
 		dirtree.WithFileSystem(fs),
 		dirtree.WithCompressWithGzip(s.Compress()),

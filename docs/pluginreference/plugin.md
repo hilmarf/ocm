@@ -2,19 +2,19 @@
 
 ### Synopsis
 
-```
+```bash
 plugin <subcommand> <options> <args>
 ```
 
 ### Options
 
-```
-  -c, --config YAML   plugin configuration
-  -h, --help          help for plugin
+```text
+  -c, --config YAML       plugin configuration
+  -h, --help              help for plugin
+      --log-config YAML   ocm logging configuration
 ```
 
 ### Description
-
 
 The OCM library has several extension points, which can be used by a registration
 mechanism to add further variants, like repository types, backend technologies,
@@ -49,8 +49,7 @@ Errors have to be reported on *stderr* as JSON document with the fields:
 
 Any plugin, regardless of its functionality has to provide an [plugin info](plugin_info.md),
 which prints JSON document containing a plugin descriptor that describes the
-apabilities of the plugin.
-
+capabilities of the plugin.
 
 ### SEE ALSO
 
@@ -71,4 +70,5 @@ apabilities of the plugin.
 
 ##### Additional Help Topics
 
+* [plugin <b>command</b>](plugin_command.md)	 &mdash; CLI command extensions
 * [plugin <b>descriptor</b>](plugin_descriptor.md)	 &mdash; Plugin Descriptor Format Description

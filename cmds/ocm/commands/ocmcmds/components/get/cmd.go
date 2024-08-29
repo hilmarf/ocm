@@ -5,23 +5,23 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/open-component-model/ocm/cmds/ocm/commands/common/options/closureoption"
-	ocmcommon "github.com/open-component-model/ocm/cmds/ocm/commands/ocmcmds/common"
-	"github.com/open-component-model/ocm/cmds/ocm/commands/ocmcmds/common/handlers/comphdlr"
-	"github.com/open-component-model/ocm/cmds/ocm/commands/ocmcmds/common/options/lookupoption"
-	"github.com/open-component-model/ocm/cmds/ocm/commands/ocmcmds/common/options/repooption"
-	"github.com/open-component-model/ocm/cmds/ocm/commands/ocmcmds/common/options/schemaoption"
-	"github.com/open-component-model/ocm/cmds/ocm/commands/ocmcmds/common/options/versionconstraintsoption"
-	"github.com/open-component-model/ocm/cmds/ocm/commands/ocmcmds/names"
-	"github.com/open-component-model/ocm/cmds/ocm/commands/verbs"
-	"github.com/open-component-model/ocm/cmds/ocm/pkg/options"
-	"github.com/open-component-model/ocm/cmds/ocm/pkg/output"
-	"github.com/open-component-model/ocm/cmds/ocm/pkg/processing"
-	"github.com/open-component-model/ocm/cmds/ocm/pkg/utils"
-	"github.com/open-component-model/ocm/pkg/contexts/clictx"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm/compdesc"
-	compdescv2 "github.com/open-component-model/ocm/pkg/contexts/ocm/compdesc/versions/v2"
+	clictx "ocm.software/ocm/api/cli"
+	"ocm.software/ocm/api/ocm"
+	"ocm.software/ocm/api/ocm/compdesc"
+	compdescv2 "ocm.software/ocm/api/ocm/compdesc/versions/v2"
+	"ocm.software/ocm/cmds/ocm/commands/common/options/closureoption"
+	ocmcommon "ocm.software/ocm/cmds/ocm/commands/ocmcmds/common"
+	"ocm.software/ocm/cmds/ocm/commands/ocmcmds/common/handlers/comphdlr"
+	"ocm.software/ocm/cmds/ocm/commands/ocmcmds/common/options/lookupoption"
+	"ocm.software/ocm/cmds/ocm/commands/ocmcmds/common/options/repooption"
+	"ocm.software/ocm/cmds/ocm/commands/ocmcmds/common/options/schemaoption"
+	"ocm.software/ocm/cmds/ocm/commands/ocmcmds/common/options/versionconstraintsoption"
+	"ocm.software/ocm/cmds/ocm/commands/ocmcmds/names"
+	"ocm.software/ocm/cmds/ocm/commands/verbs"
+	"ocm.software/ocm/cmds/ocm/common/options"
+	"ocm.software/ocm/cmds/ocm/common/output"
+	"ocm.software/ocm/cmds/ocm/common/processing"
+	"ocm.software/ocm/cmds/ocm/common/utils"
 )
 
 var (
@@ -61,6 +61,7 @@ all versions are listed.
 $ ocm get componentversion ghcr.io/mandelsoft/kubelink
 $ ocm get componentversion --repo OCIRegistry::ghcr.io mandelsoft/kubelink
 `,
+		Annotations: map[string]string{"ExampleCodeStyle": "bash"},
 	}
 }
 
@@ -133,7 +134,7 @@ func Format(opts *output.Options) processing.ProcessChain {
 		if schema == "" {
 			schema = compdescv2.SchemaVersion
 		}
-		out, err := compdesc.Convert(desc, compdesc.SchemaVersion(o.Schema))
+		out, err := compdesc.Convert(desc, compdesc.SchemaVersion(schema))
 		if err != nil {
 			return &FailedEntry{
 				Scheme:  desc.SchemaVersion(),

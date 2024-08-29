@@ -5,7 +5,7 @@ import (
 
 	"github.com/spf13/pflag"
 
-	"github.com/open-component-model/ocm/cmds/ocm/pkg/options"
+	"ocm.software/ocm/cmds/ocm/common/options"
 )
 
 func From(o options.OptionSetProvider) *Option {
@@ -30,6 +30,7 @@ func New(usage string, out bool) *Option {
 		usage: usage,
 	}
 }
+
 func (o *Option) AddFlags(fs *pflag.FlagSet) {
 	fs.BoolVarP(&o.DryRun, "dry-run", "", false, o.usage)
 	if o.out {

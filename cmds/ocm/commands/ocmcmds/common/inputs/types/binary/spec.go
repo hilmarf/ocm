@@ -3,10 +3,10 @@ package binary
 import (
 	"k8s.io/apimachinery/pkg/util/validation/field"
 
-	"github.com/open-component-model/ocm/cmds/ocm/commands/ocmcmds/common/inputs"
-	"github.com/open-component-model/ocm/cmds/ocm/commands/ocmcmds/common/inputs/cpi"
-	"github.com/open-component-model/ocm/pkg/blobaccess"
-	"github.com/open-component-model/ocm/pkg/runtime"
+	"ocm.software/ocm/api/utils/blobaccess"
+	"ocm.software/ocm/api/utils/runtime"
+	"ocm.software/ocm/cmds/ocm/commands/ocmcmds/common/inputs"
+	"ocm.software/ocm/cmds/ocm/commands/ocmcmds/common/inputs/cpi"
 )
 
 type Spec struct {
@@ -36,5 +36,5 @@ func (s *Spec) Validate(fldPath *field.Path, ctx inputs.Context, inputFilePath s
 }
 
 func (s *Spec) GetBlob(ctx inputs.Context, info inputs.InputResourceInfo) (blobaccess.BlobAccess, string, error) {
-	return s.ProcessBlob(ctx, blobaccess.DataAccessForBytes([]byte(s.Data)), ctx.FileSystem())
+	return s.ProcessBlob(ctx, blobaccess.DataAccessForData([]byte(s.Data)), ctx.FileSystem())
 }

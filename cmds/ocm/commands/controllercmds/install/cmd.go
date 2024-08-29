@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/fluxcd/pkg/ssa"
-	"github.com/open-component-model/ocm/cmds/ocm/commands/controllercmds/common"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	corev1 "k8s.io/api/core/v1"
@@ -15,11 +14,11 @@ import (
 	"k8s.io/client-go/rest"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	"github.com/open-component-model/ocm/cmds/ocm/commands/controllercmds/names"
-	"github.com/open-component-model/ocm/cmds/ocm/commands/verbs"
-	"github.com/open-component-model/ocm/cmds/ocm/pkg/utils"
-	"github.com/open-component-model/ocm/pkg/contexts/clictx"
-	"github.com/open-component-model/ocm/pkg/out"
+	clictx "ocm.software/ocm/api/cli"
+	"ocm.software/ocm/cmds/ocm/commands/controllercmds/common"
+	"ocm.software/ocm/cmds/ocm/commands/controllercmds/names"
+	"ocm.software/ocm/cmds/ocm/commands/verbs"
+	"ocm.software/ocm/cmds/ocm/common/utils"
 )
 
 var (
@@ -61,7 +60,7 @@ func (o *Command) ForName(name string) *cobra.Command {
 
 func (o *Command) AddFlags(set *pflag.FlagSet) {
 	set.StringVarP(&o.Version, "version", "v", "latest", "the version of the controller to install")
-	set.StringVarP(&o.BaseURL, "base-url", "u", "https://github.com/open-component-model/ocm-controller/releases", "the base url to the ocm-controller's release page")
+	set.StringVarP(&o.BaseURL, "base-url", "u", "https://ocm.software/ocm-controller/releases", "the base url to the ocm-controller's release page")
 	set.StringVarP(&o.ReleaseAPIURL, "release-api-url", "a", "https://api.github.com/repos/open-component-model/ocm-controller/releases", "the base url to the ocm-controller's API release page")
 	set.StringVar(&o.CertManagerBaseURL, "cert-manager-base-url", "https://github.com/cert-manager/cert-manager/releases", "the base url to the cert-manager's release page")
 	set.StringVar(&o.CertManagerReleaseAPIURL, "cert-manager-release-api-url", "https://api.github.com/repos/cert-manager/cert-manager/releases", "the base url to the cert-manager's API release page")
@@ -97,22 +96,22 @@ func (o *Command) Run() (err error) {
 
 	ctx := context.Background()
 	if !o.SkipPreFlightCheck {
-		out.Outf(o.Context, "► running pre-install check\n")
+		common.Outf(o.Context, o.DryRun, "► running pre-install check\n")
 		if err := o.RunPreFlightCheck(ctx); err != nil {
 			if o.InstallPrerequisites {
-				out.Outf(o.Context, "► installing prerequisites\n")
+				common.Outf(o.Context, o.DryRun, "► installing prerequisites\n")
 				if err := o.installPrerequisites(ctx); err != nil {
 					return err
 				}
 
-				out.Outf(o.Context, "✔ successfully installed prerequisites\n")
+				common.Outf(o.Context, o.DryRun, "✔ successfully installed prerequisites\n")
 			} else {
 				return fmt.Errorf("✗ failed to run pre-flight check: %w\n", err)
 			}
 		}
 	}
 
-	out.Outf(o.Context, "► installing ocm-controller with version %s\n", o.Version)
+	common.Outf(o.Context, o.DryRun, "► installing ocm-controller with version %s\n", o.Version)
 	version := o.Version
 	if err := common.Install(
 		ctx,
@@ -128,7 +127,7 @@ func (o *Command) Run() (err error) {
 		return err
 	}
 
-	out.Outf(o.Context, "✔ ocm-controller successfully installed\n")
+	common.Outf(o.Context, o.DryRun, "✔ ocm-controller successfully installed\n")
 	return nil
 }
 

@@ -1,8 +1,8 @@
 package docker
 
 import (
-	"github.com/open-component-model/ocm/cmds/ocm/commands/ocmcmds/common/inputs"
-	"github.com/open-component-model/ocm/pkg/contexts/oci/annotations"
+	"ocm.software/ocm/api/oci/annotations"
+	"ocm.software/ocm/cmds/ocm/commands/ocmcmds/common/inputs"
 )
 
 const TYPE = "docker"
@@ -12,8 +12,8 @@ func init() {
 }
 
 const usage = `
-The path must denote an image tag that can be found in the local
-docker daemon. The denoted image is packed as OCI artifact set.
+The path must denote an image tag that can be found in the local docker daemon.
+The denoted image is packed as OCI artifact set.
 The OCI image will contain an informational back link to the component version
 using the manifest annotation <code>` + annotations.COMPVERS_ANNOTATION + `</code>.
 

@@ -8,10 +8,10 @@ import (
 	"os"
 	"strings"
 
+	. "github.com/mandelsoft/goutils/testutils"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-	. "github.com/open-component-model/ocm/cmds/ocm/testhelper"
-	. "github.com/open-component-model/ocm/pkg/testutils"
+	. "ocm.software/ocm/cmds/ocm/testhelper"
 
 	"github.com/mandelsoft/filepath/pkg/filepath"
 )
@@ -50,21 +50,14 @@ var _ = Describe("Test Environment", func() {
 	It("install latest version", func() {
 		buf := bytes.NewBuffer(nil)
 		Expect(env.CatchOutput(buf).Execute("controller", "install", "-d", "-s", "-u", testServer.URL, "-a", testServer.URL)).To(Succeed())
-		Expect(buf.String()).To(StringEqualTrimmedWithContext(`► installing ocm-controller with version latest
-► got latest version "v0.0.1-test"
-✔ successfully fetched install file
-test: content
-✔ ocm-controller successfully installed
+		Expect(buf.String()).To(StringEqualTrimmedWithContext(`test: content
 `))
 	})
 
 	It("install specific version", func() {
 		buf := bytes.NewBuffer(nil)
 		Expect(env.CatchOutput(buf).Execute("controller", "install", "-d", "-s", "-u", testServer.URL, "-a", testServer.URL, "-v", "v0.1.0-test-2")).To(Succeed())
-		Expect(buf.String()).To(StringEqualTrimmedWithContext(`► installing ocm-controller with version v0.1.0-test-2
-✔ successfully fetched install file
-test: content
-✔ ocm-controller successfully installed
+		Expect(buf.String()).To(StringEqualTrimmedWithContext(`test: content
 `))
 	})
 })

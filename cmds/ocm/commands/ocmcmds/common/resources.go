@@ -4,35 +4,35 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/mandelsoft/goutils/sliceutils"
-	_ "github.com/open-component-model/ocm/cmds/ocm/commands/ocmcmds/common/inputs/types"
-	utils2 "github.com/open-component-model/ocm/pkg/utils"
+	_ "ocm.software/ocm/cmds/ocm/commands/ocmcmds/common/inputs/types"
 
 	"github.com/mandelsoft/goutils/errors"
+	"github.com/mandelsoft/goutils/sliceutils"
 	"github.com/mandelsoft/vfs/pkg/vfs"
 	"github.com/spf13/pflag"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 
-	"github.com/open-component-model/ocm/cmds/ocm/commands/ocmcmds/common/addhdlrs"
-	"github.com/open-component-model/ocm/cmds/ocm/commands/ocmcmds/common/inputs"
-	"github.com/open-component-model/ocm/cmds/ocm/commands/ocmcmds/common/options/dryrunoption"
-	"github.com/open-component-model/ocm/cmds/ocm/commands/ocmcmds/common/options/fileoption"
-	"github.com/open-component-model/ocm/cmds/ocm/commands/ocmcmds/common/options/templateroption"
-	"github.com/open-component-model/ocm/cmds/ocm/pkg/options"
-	"github.com/open-component-model/ocm/cmds/ocm/pkg/utils"
-	"github.com/open-component-model/ocm/pkg/cobrautils/flagsets"
-	"github.com/open-component-model/ocm/pkg/common"
-	"github.com/open-component-model/ocm/pkg/common/accessio"
-	"github.com/open-component-model/ocm/pkg/common/accessobj"
-	"github.com/open-component-model/ocm/pkg/contexts/clictx"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm/accessmethods/localblob"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm/compdesc"
-	v1 "github.com/open-component-model/ocm/pkg/contexts/ocm/compdesc/meta/v1"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm/repositories/comparch"
-	"github.com/open-component-model/ocm/pkg/logging"
-	"github.com/open-component-model/ocm/pkg/mime"
+	clictx "ocm.software/ocm/api/cli"
+	"ocm.software/ocm/api/ocm"
+	"ocm.software/ocm/api/ocm/compdesc"
+	v1 "ocm.software/ocm/api/ocm/compdesc/meta/v1"
+	"ocm.software/ocm/api/ocm/extensions/accessmethods/localblob"
+	"ocm.software/ocm/api/ocm/extensions/repositories/comparch"
+	utils2 "ocm.software/ocm/api/utils"
+	"ocm.software/ocm/api/utils/accessio"
+	"ocm.software/ocm/api/utils/accessobj"
+	"ocm.software/ocm/api/utils/cobrautils/flagsets"
+	"ocm.software/ocm/api/utils/logging"
+	"ocm.software/ocm/api/utils/mime"
+	common "ocm.software/ocm/api/utils/misc"
+	"ocm.software/ocm/cmds/ocm/commands/ocmcmds/common/addhdlrs"
+	"ocm.software/ocm/cmds/ocm/commands/ocmcmds/common/inputs"
+	"ocm.software/ocm/cmds/ocm/commands/ocmcmds/common/options/dryrunoption"
+	"ocm.software/ocm/cmds/ocm/commands/ocmcmds/common/options/fileoption"
+	"ocm.software/ocm/cmds/ocm/commands/ocmcmds/common/options/templateroption"
+	"ocm.software/ocm/cmds/ocm/common/options"
+	"ocm.software/ocm/cmds/ocm/common/utils"
 )
 
 const ComponentVersionTag = "<componentversion>"
@@ -190,8 +190,8 @@ options <code>--name</code> and <code>--version</code>. With the option <code>--
 it is possible to add extra identity attributes. Explicitly specified options
 override values specified by the <code>--%s</code> option.
 (Note: Go templates are not supported for YAML-based option values. Besides
-this restriction, the finally composed element description is still processd
-by the selected templater.) 
+this restriction, the finally composed element description is still processed
+by the selected template engine.) 
 `, a.typename, a.typename, a.typename)
 }
 

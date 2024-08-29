@@ -11,24 +11,24 @@ import (
 	"github.com/mandelsoft/vfs/pkg/vfs"
 	"github.com/spf13/cobra"
 
-	"github.com/open-component-model/ocm/cmds/ocm/commands/common/options/destoption"
-	"github.com/open-component-model/ocm/cmds/ocm/commands/common/options/formatoption"
-	"github.com/open-component-model/ocm/cmds/ocm/commands/ocicmds/common"
-	"github.com/open-component-model/ocm/cmds/ocm/commands/ocicmds/common/handlers/artifacthdlr"
-	"github.com/open-component-model/ocm/cmds/ocm/commands/ocicmds/common/options/repooption"
-	"github.com/open-component-model/ocm/cmds/ocm/commands/ocicmds/names"
-	"github.com/open-component-model/ocm/cmds/ocm/commands/verbs"
-	"github.com/open-component-model/ocm/cmds/ocm/pkg/output"
-	"github.com/open-component-model/ocm/cmds/ocm/pkg/utils"
-	"github.com/open-component-model/ocm/pkg/common/accessio"
-	"github.com/open-component-model/ocm/pkg/common/accessobj"
-	"github.com/open-component-model/ocm/pkg/common/compression"
-	"github.com/open-component-model/ocm/pkg/contexts/clictx"
-	"github.com/open-component-model/ocm/pkg/contexts/oci"
-	"github.com/open-component-model/ocm/pkg/contexts/oci/repositories/artifactset"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm/download/handlers/dirtree"
-	"github.com/open-component-model/ocm/pkg/out"
-	"github.com/open-component-model/ocm/pkg/utils/tarutils"
+	clictx "ocm.software/ocm/api/cli"
+	"ocm.software/ocm/api/oci"
+	"ocm.software/ocm/api/oci/extensions/repositories/artifactset"
+	"ocm.software/ocm/api/ocm/extensions/download/handlers/dirtree"
+	"ocm.software/ocm/api/utils/accessio"
+	"ocm.software/ocm/api/utils/accessobj"
+	"ocm.software/ocm/api/utils/compression"
+	"ocm.software/ocm/api/utils/out"
+	"ocm.software/ocm/api/utils/tarutils"
+	"ocm.software/ocm/cmds/ocm/commands/common/options/destoption"
+	"ocm.software/ocm/cmds/ocm/commands/common/options/formatoption"
+	"ocm.software/ocm/cmds/ocm/commands/ocicmds/common"
+	"ocm.software/ocm/cmds/ocm/commands/ocicmds/common/handlers/artifacthdlr"
+	"ocm.software/ocm/cmds/ocm/commands/ocicmds/common/options/repooption"
+	"ocm.software/ocm/cmds/ocm/commands/ocicmds/names"
+	"ocm.software/ocm/cmds/ocm/commands/verbs"
+	"ocm.software/ocm/cmds/ocm/common/output"
+	"ocm.software/ocm/cmds/ocm/common/utils"
 )
 
 var (
@@ -149,7 +149,8 @@ func (d *download) Save(o *artifacthdlr.Object, f string) error {
 		return err
 	}
 
-	if len(opts.Layers) > 0 {
+	switch {
+	case len(opts.Layers) > 0:
 		var finalize finalizer.Finalizer
 		defer finalize.Finalize()
 
@@ -176,7 +177,7 @@ func (d *download) Save(o *artifacthdlr.Object, f string) error {
 			if len(opts.Layers) > 1 {
 				name = fmt.Sprintf("%s-%d", f, l)
 			}
-			file, err := dest.PathFilesystem.OpenFile(name, vfs.O_CREATE|vfs.O_TRUNC|vfs.O_WRONLY, 0640)
+			file, err := dest.PathFilesystem.OpenFile(name, vfs.O_CREATE|vfs.O_TRUNC|vfs.O_WRONLY, 0o640)
 			if err != nil {
 				return errors.Wrapf(err, "cannot create target file %s for layer %d", name, l)
 			}
@@ -188,7 +189,7 @@ func (d *download) Save(o *artifacthdlr.Object, f string) error {
 			out.Outf(d.opts.Context, "%s: layer %d: %d byte(s) downloaded\n", name, l, n)
 			nested.Finalize()
 		}
-	} else if opts.DirTree {
+	case opts.DirTree:
 		format := formatoption.From(d.opts)
 
 		if !art.IsManifest() {
@@ -232,7 +233,7 @@ func (d *download) Save(o *artifacthdlr.Object, f string) error {
 		} else {
 			return accessio.CopyFileSystem(format.Format, fs, "/", dest.PathFilesystem, f, 0o640)
 		}
-	} else {
+	default:
 		blob, err := art.Blob()
 		if err != nil {
 			return err

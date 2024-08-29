@@ -3,7 +3,9 @@
 <!-- from ../docsrc/01-getting-started/README.md -->
 # Basic Usage of OCM Repositories
 
-This [tour](example.go) illustrates the basic usage of the API to
+<a id="getting-started"></a>
+
+This [tour](/examples/lib/tour/01-getting-started/example.go) illustrates the basic usage of the API to
 access component versions in an OCM repository.
 
 ## Running the example
@@ -17,10 +19,12 @@ repository: ghcr.io/mandelsoft/ocm
 version: 0.1.0
 ```
 
+<a id="getting-started-walkthrough"></a>
+
 ## Walkthrough
 
 The basic entry point for using the OCM library is always
-an [OCM Context object](../../contexts.md). It bundles all
+an [OCM Context object](/examples/lib/contexts.md). It bundles all
 configuration settings and type registrations, like
 access methods, repository types, etc, and
 configuration settings, like credentials,
@@ -32,7 +36,7 @@ a context object. Our example uses the default context
 provided by the library, which covers the complete
 type registration contained in the executable.
 
-It can be accessed by a function of the `pkg/contexts/ocm` package.
+It can be accessed by a function of the `api/ocm` package.
 
 ```go
 	ctx := ocm.DefaultContext()
@@ -53,7 +57,7 @@ the repository and can be used to store the serialized
 form as part of other resources, for example
 Kubernetes resources or configuration settings.
 The available repository implementations can be found
-under `.../pkg/contexts/ocm/repositories`.
+under `.../api/ocm/extensions/repositories`.
 
 ```go
 	spec := ocireg.NewRepositorySpec("ghcr.io/open-component-model/ocm")
@@ -162,34 +166,34 @@ and the resources described by the component version.
 This results in the following output (the shown version might
 differ, because the code always describes the latest version):
 
-```
+```text
 resources of the latest version:
-  version:  0.9.0
+  version:  0.14.0
   provider: ocm.software
    1: name:           ocmcli
       extra identity: "architecture"="amd64","os"="linux"
       resource type:  executable
-      access:         Local blob sha256:1de1c90f23d0a3dbb8d8646f09380f1da257f9d10796b42dc4ef85e8df93a135[]
+      access:         Local blob sha256:a2956cab68775be3e4e52da7eec4c2fded6bde932b5a21c28a64f0dbc70848dc[]
    2: name:           ocmcli
       extra identity: "architecture"="arm64","os"="linux"
       resource type:  executable
-      access:         Local blob sha256:ca049bb09399020ce0822fd18c0a534ae0d02c3e0180f05dd4faccf61176a267[]
+      access:         Local blob sha256:0ec7cb898d57b87b0b66eeebff7698bc9aaedd1dc8a4d3972b5696412f2cb489[]
    3: name:           ocmcli
       extra identity: "architecture"="arm64","os"="darwin"
       resource type:  executable
-      access:         Local blob sha256:1e32b3f1a08c72e3187b247f8931ea9d0554240fd452a4df129d6036c62b0476[]
+      access:         Local blob sha256:e4939b6d6b777dc20103b8947046b842f47907c3f22b64a752f12b6ef53e4caa[]
    4: name:           ocmcli
       extra identity: "architecture"="amd64","os"="darwin"
       resource type:  executable
-      access:         Local blob sha256:04708d2f9845dd6d52f2b8f94e930f3a74a1a098b7ee401e001307d4b4fcc703[]
+      access:         Local blob sha256:fcdffe917dafcefdb3d39bf367dde7254537bb2cddb106fd746bdff2679d178a[]
    5: name:           ocmcli
       extra identity: "architecture"="amd64","os"="windows"
       resource type:  executable
-      access:         Local blob sha256:e8cf5dfd1ab02ab982e6f1a425d426fc1f7dc83e6385d26d0477525a4a66c629[]
+      access:         Local blob sha256:e25d67c4e79205726c3d2b88add9189507fbd8a4f0c18c793486e7f97f3b7120[]
    6: name:           ocmcli-image
       extra identity: 
       resource type:  ociImage
-      access:         OCI artifact ghcr.io/open-component-model/ocm/ocm.software/ocmcli/ocmcli-image:0.9.0
+      access:         OCI artifact ghcr.io/open-component-model/ocm/ocm.software/ocmcli/ocmcli-image:0.14.0
 ```
 
 Resources have some metadata, like their identity and a resource type.
@@ -272,11 +276,11 @@ closing the reader, again
 	defer reader.Close()
 ```
 
-Now, we just read the content and copy it to the intended 
+Now, we just read the content and copy it to the intended
 output file (`/tmp/ocmcli`).
 
 ```go
-	file, err := os.OpenFile("/tmp/ocmcli", os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0766)
+	file, err := os.OpenFile("/tmp/ocmcli", os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0o766)
 	if err != nil {
 		return errors.Wrapf(err, "cannot open output file")
 	}

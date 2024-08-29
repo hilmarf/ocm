@@ -1,11 +1,11 @@
 package check
 
 import (
+	"github.com/mandelsoft/goutils/optionutils"
 	"github.com/spf13/pflag"
 
-	"github.com/open-component-model/ocm/cmds/ocm/pkg/options"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm/utils/check"
-	"github.com/open-component-model/ocm/pkg/optionutils"
+	"ocm.software/ocm/api/ocm/ocmutils/check"
+	"ocm.software/ocm/cmds/ocm/common/options"
 )
 
 func From(o options.OptionSetProvider) *Option {
@@ -37,8 +37,8 @@ func (o *Option) AddFlags(fs *pflag.FlagSet) {
 
 func (o *Option) Usage() string {
 	s := `
-If the options <code>--local-resources</code> and/or <code>--local-sources</code> are given the
-the check additionally assures that all resources or sources are included into the component version.
+If the options <code>--local-resources</code> and/or <code>--local-sources</code> are given the 
+check additionally assures that all resources or sources are included into the component version.
 This means that they are using local access methods, only.
 `
 	return s

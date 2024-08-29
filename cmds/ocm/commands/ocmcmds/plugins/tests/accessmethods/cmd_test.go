@@ -3,36 +3,37 @@ package accessmethods_test
 import (
 	"encoding/json"
 
+	. "github.com/mandelsoft/goutils/testutils"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-	. "github.com/open-component-model/ocm/cmds/ocm/testhelper"
-	. "github.com/open-component-model/ocm/pkg/testutils"
+	. "ocm.software/ocm/api/ocm/plugin/testutils"
+	. "ocm.software/ocm/cmds/ocm/testhelper"
 
-	"github.com/open-component-model/ocm/pkg/contexts/ocm"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm/attrs/plugincacheattr"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm/attrs/plugindirattr"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm/compdesc"
-	metav1 "github.com/open-component-model/ocm/pkg/contexts/ocm/compdesc/meta/v1"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm/cpi"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm/plugin/plugins"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm/registration"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm/repositories/comparch"
+	"ocm.software/ocm/api/ocm"
+	"ocm.software/ocm/api/ocm/compdesc"
+	metav1 "ocm.software/ocm/api/ocm/compdesc/meta/v1"
+	"ocm.software/ocm/api/ocm/cpi"
+	"ocm.software/ocm/api/ocm/extensions/repositories/comparch"
+	"ocm.software/ocm/api/ocm/plugin/plugins"
+	"ocm.software/ocm/api/ocm/plugin/registration"
 )
 
-const CA = "/tmp/ca"
-const VERSION = "v1"
+const (
+	CA      = "/tmp/ca"
+	VERSION = "v1"
+)
 
 var _ = Describe("Add with new access method", func() {
 	var env *TestEnv
 	var ctx ocm.Context
 	var registry plugins.Set
+	var plugins TempPluginDir
 
 	BeforeEach(func() {
 		env = NewTestEnv(TestData())
 		ctx = env.OCMContext()
+		plugins, registry = Must2(ConfigureTestPlugins2(env, "testdata"))
 
-		plugindirattr.Set(ctx, "testdata")
-		registry = plugincacheattr.Get(ctx)
 		Expect(registration.RegisterExtensions(ctx)).To(Succeed())
 		p := registry.Get("test")
 		Expect(p).NotTo(BeNil())
@@ -41,6 +42,7 @@ var _ = Describe("Add with new access method", func() {
 	})
 
 	AfterEach(func() {
+		plugins.Cleanup()
 		env.Cleanup()
 	})
 

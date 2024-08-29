@@ -5,9 +5,10 @@ import (
 	"io/ioutil"
 
 	"github.com/mandelsoft/goutils/errors"
-	"github.com/open-component-model/ocm/pkg/contexts/config"
-	"github.com/open-component-model/ocm/pkg/contexts/config/cpi"
-	"github.com/open-component-model/ocm/pkg/runtime"
+
+	"ocm.software/ocm/api/config"
+	"ocm.software/ocm/api/config/cpi"
+	"ocm.software/ocm/api/utils/runtime"
 )
 
 const CFGFILE = "examples/lib/config3/config.yaml"

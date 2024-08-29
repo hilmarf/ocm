@@ -10,29 +10,29 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 
-	ocmcommon "github.com/open-component-model/ocm/cmds/ocm/commands/ocmcmds/common"
-	"github.com/open-component-model/ocm/cmds/ocm/commands/ocmcmds/common/handlers/comphdlr"
-	"github.com/open-component-model/ocm/cmds/ocm/commands/ocmcmds/common/options/lookupoption"
-	"github.com/open-component-model/ocm/cmds/ocm/commands/ocmcmds/common/options/repooption"
-	"github.com/open-component-model/ocm/cmds/ocm/commands/toicmds/names"
-	"github.com/open-component-model/ocm/cmds/ocm/commands/toicmds/package/bootstrap"
-	"github.com/open-component-model/ocm/cmds/ocm/commands/verbs"
-	"github.com/open-component-model/ocm/cmds/ocm/pkg/output"
-	"github.com/open-component-model/ocm/cmds/ocm/pkg/utils"
-	topicbootstrap "github.com/open-component-model/ocm/cmds/ocm/topics/toi/bootstrapping"
-	"github.com/open-component-model/ocm/pkg/common"
-	"github.com/open-component-model/ocm/pkg/contexts/clictx"
-	"github.com/open-component-model/ocm/pkg/contexts/oci/repositories/ocireg"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm/attrs/ociuploadattr"
-	metav1 "github.com/open-component-model/ocm/pkg/contexts/ocm/compdesc/meta/v1"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm/download"
-	utils2 "github.com/open-component-model/ocm/pkg/contexts/ocm/utils"
-	"github.com/open-component-model/ocm/pkg/out"
-	"github.com/open-component-model/ocm/pkg/runtime"
-	"github.com/open-component-model/ocm/pkg/toi"
-	"github.com/open-component-model/ocm/pkg/toi/install"
-	utils3 "github.com/open-component-model/ocm/pkg/utils"
+	clictx "ocm.software/ocm/api/cli"
+	"ocm.software/ocm/api/oci/extensions/repositories/ocireg"
+	"ocm.software/ocm/api/ocm"
+	metav1 "ocm.software/ocm/api/ocm/compdesc/meta/v1"
+	"ocm.software/ocm/api/ocm/extensions/attrs/ociuploadattr"
+	"ocm.software/ocm/api/ocm/extensions/download"
+	utils2 "ocm.software/ocm/api/ocm/ocmutils"
+	"ocm.software/ocm/api/ocm/tools/toi"
+	"ocm.software/ocm/api/ocm/tools/toi/install"
+	utils3 "ocm.software/ocm/api/utils"
+	common "ocm.software/ocm/api/utils/misc"
+	"ocm.software/ocm/api/utils/out"
+	"ocm.software/ocm/api/utils/runtime"
+	ocmcommon "ocm.software/ocm/cmds/ocm/commands/ocmcmds/common"
+	"ocm.software/ocm/cmds/ocm/commands/ocmcmds/common/handlers/comphdlr"
+	"ocm.software/ocm/cmds/ocm/commands/ocmcmds/common/options/lookupoption"
+	"ocm.software/ocm/cmds/ocm/commands/ocmcmds/common/options/repooption"
+	"ocm.software/ocm/cmds/ocm/commands/toicmds/names"
+	"ocm.software/ocm/cmds/ocm/commands/toicmds/package/bootstrap"
+	"ocm.software/ocm/cmds/ocm/commands/verbs"
+	"ocm.software/ocm/cmds/ocm/common/output"
+	"ocm.software/ocm/cmds/ocm/common/utils"
+	topicbootstrap "ocm.software/ocm/cmds/ocm/topics/toi/bootstrapping"
 )
 
 const (
@@ -80,13 +80,14 @@ If no credentials file name is provided (option -c) the file
 <code>` + DEFAULT_CREDENTIALS_FILE + `</code> is used. If no parameter file name is
 provided (option -p) the file <code>` + DEFAULT_PARAMETER_FILE + `</code> is used.
 
-For more details about those files see <CMD> ocm bootstrap package</CMD>.
+For more details about those files see <CMD>ocm bootstrap package</CMD>.
 `,
 		Example: `
 $ ocm toi bootstrap config ghcr.io/mandelsoft/ocm//ocmdemoinstaller:0.0.1-dev
 `,
+		Annotations: map[string]string{"ExampleCodeStyle": "bash"},
 	}
-	cmd.AddCommand(topicbootstrap.New(o.Context, "toi-bootstrapping"))
+	cmd.AddCommand(utils.DocuCommandPath(topicbootstrap.New(o.Context, "toi-bootstrapping"), "ocm"))
 	return cmd
 }
 
@@ -181,13 +182,10 @@ func (a *action) Out() error {
 		return nil
 	}
 
-	err = nil
 	if len(spec.Scheme) > 0 && a.cmd.ParameterFile != "" {
 		schemeFile := a.cmd.ParameterFile
-		if strings.HasSuffix(schemeFile, ".yaml") {
-			schemeFile = schemeFile[:len(schemeFile)-5]
-		}
-		schemeFile = schemeFile + ".jsonscheme"
+		schemeFile = strings.TrimSuffix(schemeFile, ".yaml")
+		schemeFile += ".jsonscheme"
 		err = vfs.WriteFile(a.cmd.FileSystem(), schemeFile, spec.Scheme, 0o644)
 		if err != nil {
 			out.Errf(a.cmd.Context, "writing scheme file %s failed: %s\n", schemeFile, err)
@@ -223,7 +221,8 @@ func (a *action) handle(kind, path string, cv ocm.ComponentVersionAccess, spec *
 					l = len(c)
 					err = vfs.WriteFile(a.cmd.FileSystem(), path, c, 0o600)
 				default:
-					data, err := runtime.DefaultYAMLEncoding.Marshal(spec.Content)
+					var data []byte
+					data, err = runtime.DefaultYAMLEncoding.Marshal(spec.Content)
 					if err != nil {
 						data = spec.Content
 					}
@@ -249,7 +248,7 @@ func (a *action) download(kind, path string, cv ocm.ComponentVersionAccess, spec
 		return errors.Wrapf(err, "%s resource", kind)
 	}
 	out.Outf(a.cmd.Context, "downloading %s...\n", kind)
-	ok, path, err := download.For(a.cmd.Context).DownloadAsBlob(common.NewPrinter(a.cmd.StdOut()), res, path, a.cmd.FileSystem())
+	ok, _, err := download.For(a.cmd.Context).DownloadAsBlob(common.NewPrinter(a.cmd.StdOut()), res, path, a.cmd.FileSystem())
 	if err != nil {
 		return err
 	}

@@ -8,14 +8,15 @@ import (
 	"strings"
 
 	"github.com/mandelsoft/goutils/errors"
-	"github.com/open-component-model/ocm/pkg/common"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm"
-	metav1 "github.com/open-component-model/ocm/pkg/contexts/ocm/compdesc/meta/v1"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm/download"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm/extraid"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm/repositories/ocireg"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm/utils"
-	"github.com/open-component-model/ocm/pkg/semverutils"
+
+	"ocm.software/ocm/api/ocm"
+	metav1 "ocm.software/ocm/api/ocm/compdesc/meta/v1"
+	"ocm.software/ocm/api/ocm/extensions/download"
+	"ocm.software/ocm/api/ocm/extensions/repositories/ocireg"
+	"ocm.software/ocm/api/ocm/extraid"
+	utils "ocm.software/ocm/api/ocm/ocmutils"
+	common "ocm.software/ocm/api/utils/misc"
+	"ocm.software/ocm/api/utils/semverutils"
 )
 
 func GettingStarted() error {
@@ -45,7 +46,7 @@ func GettingStarted() error {
 	// form as part of other resources, for example
 	// Kubernetes resources.
 	// The available repository implementations can be found
-	// under .../pkg/contexts/ocm/repositories.
+	// under .../api/ocm/extensions/repositories.
 	// --- begin repository spec ---
 	spec := ocireg.NewRepositorySpec("ghcr.io/open-component-model/ocm")
 	// --- end repository spec ---
@@ -210,7 +211,7 @@ func GettingStarted() error {
 	// --- end closing reader ---
 
 	// --- begin copy ---
-	file, err := os.OpenFile("/tmp/ocmcli", os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0766)
+	file, err := os.OpenFile("/tmp/ocmcli", os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0o766)
 	if err != nil {
 		return errors.Wrapf(err, "cannot open output file")
 	}

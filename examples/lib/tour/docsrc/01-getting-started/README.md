@@ -1,7 +1,8 @@
 # Basic Usage of OCM Repositories
+
 {{getting-started}}
 
-This [tour](example.go) illustrates the basic usage of the API to
+This [tour](/examples/lib/tour/01-getting-started/example.go) illustrates the basic usage of the API to
 access component versions in an OCM repository.
 
 ## Running the example
@@ -16,10 +17,11 @@ version: 0.1.0
 ```
 
 {{getting-started-walkthrough}}
+
 ## Walkthrough
 
 The basic entry point for using the OCM library is always
-an [OCM Context object](../../contexts.md). It bundles all
+an [OCM Context object](/examples/lib/contexts.md). It bundles all
 configuration settings and type registrations, like
 access methods, repository types, etc, and
 configuration settings, like credentials,
@@ -31,7 +33,7 @@ a context object. Our example uses the default context
 provided by the library, which covers the complete
 type registration contained in the executable.
 
-It can be accessed by a function of the `pkg/contexts/ocm` package.
+It can be accessed by a function of the `api/ocm` package.
 
 ```go
 {{include}{../../01-getting-started/example.go}{default context}}
@@ -52,7 +54,7 @@ the repository and can be used to store the serialized
 form as part of other resources, for example
 Kubernetes resources or configuration settings.
 The available repository implementations can be found
-under `.../pkg/contexts/ocm/repositories`.
+under `.../api/ocm/extensions/repositories`.
 
 ```go
 {{include}{../../01-getting-started/example.go}{repository spec}}
@@ -130,7 +132,7 @@ and the resources described by the component version.
 This results in the following output (the shown version might
 differ, because the code always describes the latest version):
 
-```
+```text
 {{execute}{go}{run}{../../01-getting-started}{<extract>}{version}}
 ```
 
@@ -198,7 +200,7 @@ closing the reader, again
 {{include}{../../01-getting-started/example.go}{closing reader}}
 ```
 
-Now, we just read the content and copy it to the intended 
+Now, we just read the content and copy it to the intended
 output file (`/tmp/ocmcli`).
 
 ```go

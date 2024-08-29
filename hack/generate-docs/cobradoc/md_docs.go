@@ -13,8 +13,8 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 
-	"github.com/open-component-model/ocm/pkg/cobrautils"
-	"github.com/open-component-model/ocm/pkg/cobrautils/groups"
+	"ocm.software/ocm/api/utils/cobrautils"
+	"ocm.software/ocm/api/utils/cobrautils/groups"
 )
 
 func printOptionGroups(buf *bytes.Buffer, title string, flags *pflag.FlagSet) {
@@ -25,12 +25,12 @@ func printOptionGroups(buf *bytes.Buffer, title string, flags *pflag.FlagSet) {
 			if g.Title != "" {
 				buf.WriteString("\n#### " + g.Title + "\n\n")
 			}
-			buf.WriteString("```\n")
+			buf.WriteString("```text\n")
 			buf.WriteString(g.Usages)
 			buf.WriteString("```\n\n")
 		}
 	} else {
-		buf.WriteString("```\n")
+		buf.WriteString("```text\n")
 		buf.WriteString(groups[0].Usages)
 		buf.WriteString("```\n\n")
 	}
@@ -68,11 +68,11 @@ func GenMarkdownCustom(cmd *cobra.Command, w io.Writer, linkHandler func(string)
 
 	if cmd.Runnable() || cmd.HasAvailableSubCommands() {
 		buf.WriteString("### Synopsis\n\n")
-		buf.WriteString(fmt.Sprintf("```\n%s\n```\n\n", UseLine(cmd)))
+		buf.WriteString(fmt.Sprintf("```bash\n%s\n```\n\n", UseLine(cmd)))
 		if len(cmd.Aliases) > 0 {
-			buf.WriteString("##### Aliases\n\n")
+			buf.WriteString("#### Aliases\n\n")
 			cmd.NameAndAliases()
-			buf.WriteString(fmt.Sprintf("```\n%s\n```\n\n", cmd.NameAndAliases()))
+			buf.WriteString(fmt.Sprintf("```text\n%s\n```\n\n", cmd.NameAndAliases()))
 		}
 	}
 
@@ -88,8 +88,8 @@ func GenMarkdownCustom(cmd *cobra.Command, w io.Writer, linkHandler func(string)
 
 		desc = strings.ReplaceAll(desc, "\\\n", "\n")
 		links, desc = cobrautils.SubstituteCommandLinks(cmd.Long, cobrautils.FormatLinkWithHandler(linkHandler))
-		buf.WriteString("### Description\n\n")
-		buf.WriteString(desc + "\n\n")
+		buf.WriteString("### Description\n")
+		buf.WriteString(desc + "\n")
 	}
 
 	if len(cmd.Example) > 0 {
@@ -98,7 +98,7 @@ func GenMarkdownCustom(cmd *cobra.Command, w io.Writer, linkHandler func(string)
 		if strings.Contains(cmd.Example, "<pre>") {
 			buf.WriteString(fmt.Sprintf("\n%s\n\n", SanitizePre(cmd.Example)))
 		} else {
-			buf.WriteString(fmt.Sprintf("```\n%s\n```\n\n", strings.TrimSpace(cmd.Example)))
+			buf.WriteString(fmt.Sprintf("```%s\n%s\n```\n\n", ExampleCodeStyle(cmd), strings.TrimSpace(cmd.Example)))
 		}
 	}
 
@@ -118,7 +118,7 @@ func GenMarkdownCustom(cmd *cobra.Command, w io.Writer, linkHandler func(string)
 		buf.WriteString("### SEE ALSO\n\n")
 		if cmd.HasParent() {
 			header = true
-			buf.WriteString("##### Parents\n\n")
+			buf.WriteString("#### Parents\n\n")
 			parent := cmd
 			for parent.HasParent() {
 				parent = parent.Parent()
@@ -146,7 +146,7 @@ func GenMarkdownCustom(cmd *cobra.Command, w io.Writer, linkHandler func(string)
 				buf.WriteString("\n\n##### Sub Commands\n\n")
 				subheader = true
 			}
-			path := child.CommandPath()
+			path := DocuCommandPath(child)
 			cname := name + " " + "<b>" + child.Name() + "</b>"
 
 			if OverviewOnly(cmd) {
@@ -182,9 +182,9 @@ func GenMarkdownCustom(cmd *cobra.Command, w io.Writer, linkHandler func(string)
 				buf.WriteString("\n\n##### Additional Help Topics\n\n")
 				subheader = true
 			}
-			path := child.CommandPath()
+			path := DocuCommandPath(child)
 			shown_links = append(shown_links, path)
-			cname := name + " " + "<b>" + child.Name() + "</b>"
+			cname := FormattedCommandPath(child)
 			buf.WriteString(fmt.Sprintf("* [%s](%s)\t &mdash; %s\n", cname, linkHandler(path), child.Short))
 		}
 
@@ -255,6 +255,34 @@ func OverviewOnly(cmd *cobra.Command) bool {
 	}
 	_, ok := cmd.Annotations["overview"]
 	return ok
+}
+
+func DocuCommandPath(cmd *cobra.Command) string {
+	if cmd.Annotations != nil {
+		if p, ok := cmd.Annotations["commandPath"]; ok {
+			return p
+		}
+	}
+	return cmd.CommandPath()
+}
+
+func ExampleCodeStyle(cmd *cobra.Command) string {
+	if cmd.Annotations != nil {
+		if p, ok := cmd.Annotations["ExampleCodeStyle"]; ok {
+			return p
+		}
+	}
+	return "text"
+}
+
+func FormattedCommandPath(cmd *cobra.Command) string {
+	path := DocuCommandPath(cmd)
+
+	h := strings.Split(path, " ")
+	if h[len(h)-1] == cmd.Name() {
+		return strings.Join(h[:len(h)-1], " ") + " " + "<b>" + cmd.Name() + "</b>"
+	}
+	return path
 }
 
 // GenMarkdownTreeCustom is the same as GenMarkdownTree, but

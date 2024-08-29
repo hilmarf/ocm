@@ -4,9 +4,9 @@ import (
 	"github.com/Masterminds/semver/v3"
 	"github.com/spf13/pflag"
 
-	"github.com/open-component-model/ocm/cmds/ocm/pkg/options"
-	"github.com/open-component-model/ocm/pkg/cobrautils/flag"
-	"github.com/open-component-model/ocm/pkg/utils"
+	"ocm.software/ocm/api/utils"
+	"ocm.software/ocm/api/utils/cobrautils/flag"
+	"ocm.software/ocm/cmds/ocm/common/options"
 )
 
 func From(o options.OptionSetProvider) *Option {
@@ -38,7 +38,6 @@ func (o *Option) SetLatest(latest ...bool) *Option {
 }
 
 func (o *Option) Usage() string {
-
 	s := `
 If the option <code>--constraints</code> is given, and no version is specified
 for a component, only versions matching the given version constraints

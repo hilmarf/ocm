@@ -3,15 +3,17 @@ package main
 import (
 	"fmt"
 
-	"github.com/open-component-model/ocm/pkg/contexts/ocm"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm/compdesc"
-	metav1 "github.com/open-component-model/ocm/pkg/contexts/ocm/compdesc/meta/v1"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm/repositories/ocireg"
-	"github.com/open-component-model/ocm/pkg/utils"
+	"ocm.software/ocm/api/ocm"
+	"ocm.software/ocm/api/ocm/compdesc"
+	metav1 "ocm.software/ocm/api/ocm/compdesc/meta/v1"
+	"ocm.software/ocm/api/ocm/extensions/repositories/ocireg"
+	"ocm.software/ocm/api/utils"
 )
 
-const componentName = "ocm.software/toi/demo/helmdemo"
-const componentVersion = "0.3.0-rc.2"
+const (
+	componentName    = "ocm.software/toi/demo/helmdemo"
+	componentVersion = "0.3.0-rc.2"
+)
 
 const resourceName = "package"
 

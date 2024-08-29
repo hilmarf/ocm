@@ -2,8 +2,7 @@
   description = "Nix flake for ocm";
 
   inputs = {
-    # NixPkgs (nixos-23.11)
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-23.11";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.05";
   };
 
   outputs = { self, nixpkgs, ... }:
@@ -28,23 +27,23 @@
           inherit (pkgs) stdenv lib ;
         in
         {
-          ${pname} = pkgs.buildGo121Module rec {
+          ${pname} = pkgs.buildGo122Module rec {
             inherit pname self;
             version = lib.fileContents ./VERSION;
             gitCommit = if (self ? rev) then self.rev else self.dirtyRev;
             state = if (self ? rev) then "clean" else "dirty";
 
             # This vendorHash represents a dervative of all go.mod dependancies and needs to be adjusted with every change
-            vendorHash = "sha256-CA3p9QNHo7mHCoXkuOojFAJen3TdieSsoQVivxPk3yw=";
+            vendorHash = "sha256-mrQfZ9MdDvNvmUL1GE+8j1Tcek+JwLatVbxxsD7fcvI=";
 
             src = ./.;
 
             ldflags = [
               "-s" "-w"
-              "-X github.com/open-component-model/ocm/pkg/version.gitVersion=${version}"
-              "-X github.com/open-component-model/ocm/pkg/version.gitTreeState=${state}"
-              "-X github.com/open-component-model/ocm/pkg/version.gitCommit=${gitCommit}"
-            # "-X github.com/open-component-model/ocm/pkg/version.buildDate=1970-01-01T0:00:00+0000"
+              "-X ocm.software/ocm/api/version.gitVersion=${version}"
+              "-X ocm.software/ocm/api/version.gitTreeState=${state}"
+              "-X ocm.software/ocm/api/version.gitCommit=${gitCommit}"
+            # "-X ocm.software/ocm/api/version.buildDate=1970-01-01T0:00:00+0000"
             ];
 
             CGO_ENABLED = 0;
@@ -86,7 +85,7 @@
         {
           default = pkgs.mkShell {
             buildInputs = with pkgs; [ 
-              go_1_21   # golang 1.21
+              go_1_22   # golang 1.22
               gopls     # go language server
               gotools   # go imports
               go-tools  # static checks
@@ -118,5 +117,10 @@
           program = self.packages.${system}.${pname} + "/bin/ecrplugin";
         };
       });
+      
+      legacyPackages = forAllSystems (system: rec {
+        nixpkgs = nixpkgsFor.${system};
+      });
+
     };
 }

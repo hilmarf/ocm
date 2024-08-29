@@ -2,18 +2,17 @@
 
 ### Synopsis
 
-```
+```bash
 plugin accessmethod compose <name> <options json> <base spec json> [<options>]
 ```
 
 ### Options
 
-```
+```text
   -h, --help   help for compose
 ```
 
 ### Description
-
 
 The task of this command is to compose an access specification based on some
 explicitly given input options and preconfigured specifications.
@@ -40,21 +39,28 @@ The following predefined option types can be used:
   - <code>accessRegistry</code>: [*string*] registry base URL
   - <code>accessRepository</code>: [*string*] repository URL
   - <code>accessVersion</code>: [*string*] version for access specification
+  - <code>artifactId</code>: [*string*] maven artifact id
   - <code>body</code>: [*string*] body of a http request
   - <code>bucket</code>: [*string*] bucket name
+  - <code>classifier</code>: [*string*] maven classifier
   - <code>comment</code>: [*string*] comment field value
   - <code>commit</code>: [*string*] git commit id
   - <code>digest</code>: [*string*] blob digest
+  - <code>extension</code>: [*string*] maven extension name
   - <code>globalAccess</code>: [*map[string]YAML*] access specification for global access
+  - <code>groupId</code>: [*string*] maven group id
   - <code>header</code>: [*string:string,string*] http headers
   - <code>hint</code>: [*string*] (repository) hint for local artifacts
   - <code>mediaType</code>: [*string*] media type for artifact blob representation
   - <code>noredirect</code>: [*bool*] http redirect behavior
+  - <code>package</code>: [*string*] npm package name
   - <code>reference</code>: [*string*] reference name
   - <code>region</code>: [*string*] region name
+  - <code>registry</code>: [*string*] npm package registry
   - <code>size</code>: [*int*] blob size
   - <code>url</code>: [*string*] artifact or server url
   - <code>verb</code>: [*string*] http request method
+  - <code>version</code>: [*string*] npm package version
 
 The following predefined value types are supported:
 
@@ -70,10 +76,9 @@ The following predefined value types are supported:
   - <code>string=YAML</code>: string map with arbitrary values defined by dedicated assignments
   - <code>string=string</code>: string map defined by dedicated assignments
   - <code>string=string,string</code>: string map defined by dedicated assignment of comma separated strings
-
 ### SEE ALSO
 
-##### Parents
+#### Parents
 
 * [plugin accessmethod](plugin_accessmethod.md)	 &mdash; access method operations
 * [plugin](plugin.md)	 &mdash; OCM Plugin

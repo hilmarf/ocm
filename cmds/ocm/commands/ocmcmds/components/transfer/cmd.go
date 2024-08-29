@@ -4,39 +4,39 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"github.com/mandelsoft/goutils/errors"
 	"github.com/mandelsoft/goutils/maputils"
 	"github.com/mandelsoft/vfs/pkg/vfs"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 
-	"github.com/mandelsoft/goutils/errors"
-	"github.com/open-component-model/ocm/cmds/ocm/commands/common/options/closureoption"
-	"github.com/open-component-model/ocm/cmds/ocm/commands/common/options/formatoption"
-	ocmcommon "github.com/open-component-model/ocm/cmds/ocm/commands/ocmcmds/common"
-	"github.com/open-component-model/ocm/cmds/ocm/commands/ocmcmds/common/handlers/comphdlr"
-	"github.com/open-component-model/ocm/cmds/ocm/commands/ocmcmds/common/options/lookupoption"
-	"github.com/open-component-model/ocm/cmds/ocm/commands/ocmcmds/common/options/omitaccesstypeoption"
-	"github.com/open-component-model/ocm/cmds/ocm/commands/ocmcmds/common/options/overwriteoption"
-	"github.com/open-component-model/ocm/cmds/ocm/commands/ocmcmds/common/options/repooption"
-	"github.com/open-component-model/ocm/cmds/ocm/commands/ocmcmds/common/options/rscbyvalueoption"
-	"github.com/open-component-model/ocm/cmds/ocm/commands/ocmcmds/common/options/scriptoption"
-	"github.com/open-component-model/ocm/cmds/ocm/commands/ocmcmds/common/options/skipupdateoption"
-	"github.com/open-component-model/ocm/cmds/ocm/commands/ocmcmds/common/options/srcbyvalueoption"
-	"github.com/open-component-model/ocm/cmds/ocm/commands/ocmcmds/common/options/stoponexistingoption"
-	"github.com/open-component-model/ocm/cmds/ocm/commands/ocmcmds/common/options/uploaderoption"
-	"github.com/open-component-model/ocm/cmds/ocm/commands/ocmcmds/common/options/versionconstraintsoption"
-	"github.com/open-component-model/ocm/cmds/ocm/commands/ocmcmds/names"
-	"github.com/open-component-model/ocm/cmds/ocm/commands/verbs"
-	"github.com/open-component-model/ocm/cmds/ocm/pkg/options"
-	"github.com/open-component-model/ocm/cmds/ocm/pkg/output"
-	"github.com/open-component-model/ocm/cmds/ocm/pkg/utils"
-	"github.com/open-component-model/ocm/pkg/common"
-	"github.com/open-component-model/ocm/pkg/contexts/clictx"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm/transfer"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm/transfer/transferhandler"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm/transfer/transferhandler/spiff"
-	"github.com/open-component-model/ocm/pkg/out"
+	clictx "ocm.software/ocm/api/cli"
+	"ocm.software/ocm/api/ocm"
+	"ocm.software/ocm/api/ocm/tools/transfer"
+	"ocm.software/ocm/api/ocm/tools/transfer/transferhandler"
+	"ocm.software/ocm/api/ocm/tools/transfer/transferhandler/spiff"
+	common "ocm.software/ocm/api/utils/misc"
+	"ocm.software/ocm/api/utils/out"
+	"ocm.software/ocm/cmds/ocm/commands/common/options/closureoption"
+	"ocm.software/ocm/cmds/ocm/commands/common/options/formatoption"
+	ocmcommon "ocm.software/ocm/cmds/ocm/commands/ocmcmds/common"
+	"ocm.software/ocm/cmds/ocm/commands/ocmcmds/common/handlers/comphdlr"
+	"ocm.software/ocm/cmds/ocm/commands/ocmcmds/common/options/lookupoption"
+	"ocm.software/ocm/cmds/ocm/commands/ocmcmds/common/options/omitaccesstypeoption"
+	"ocm.software/ocm/cmds/ocm/commands/ocmcmds/common/options/overwriteoption"
+	"ocm.software/ocm/cmds/ocm/commands/ocmcmds/common/options/repooption"
+	"ocm.software/ocm/cmds/ocm/commands/ocmcmds/common/options/rscbyvalueoption"
+	"ocm.software/ocm/cmds/ocm/commands/ocmcmds/common/options/scriptoption"
+	"ocm.software/ocm/cmds/ocm/commands/ocmcmds/common/options/skipupdateoption"
+	"ocm.software/ocm/cmds/ocm/commands/ocmcmds/common/options/srcbyvalueoption"
+	"ocm.software/ocm/cmds/ocm/commands/ocmcmds/common/options/stoponexistingoption"
+	"ocm.software/ocm/cmds/ocm/commands/ocmcmds/common/options/uploaderoption"
+	"ocm.software/ocm/cmds/ocm/commands/ocmcmds/common/options/versionconstraintsoption"
+	"ocm.software/ocm/cmds/ocm/commands/ocmcmds/names"
+	"ocm.software/ocm/cmds/ocm/commands/verbs"
+	"ocm.software/ocm/cmds/ocm/common/options"
+	"ocm.software/ocm/cmds/ocm/common/output"
+	"ocm.software/ocm/cmds/ocm/common/utils"
 )
 
 var (
@@ -86,6 +86,7 @@ are transferred.
 $ ocm transfer components -t tgz ghcr.io/mandelsoft/kubelink ctf.tgz
 $ ocm transfer components -t tgz --repo OCIRegistry::ghcr.io mandelsoft/kubelink ctf.tgz
 `,
+		Annotations: map[string]string{"ExampleCodeStyle": "bash"},
 	}
 }
 
@@ -135,7 +136,6 @@ func (o *Command) Run() error {
 		spiff.ScriptFilesystem(o.FileSystem()),
 	)...)
 	thdlr, err := spiff.New(transferopts)
-
 	if err != nil {
 		return err
 	}
@@ -187,7 +187,11 @@ func (a *action) Close() error {
 func (a *action) Out() error {
 	a.printer.Printf("%d versions transferred\n", len(a.closure))
 	if a.errors.Result() != nil {
-		return fmt.Errorf("transfer finished with %d error(s)", a.errors.Len())
+		sum := "Error summary:"
+		for _, e := range a.errors.Entries() {
+			sum = fmt.Sprintf("%s\n- %s", sum, e)
+		}
+		return fmt.Errorf("transfer finished with %d error(s)\n%s\n", a.errors.Len(), sum)
 	}
 
 	if a.cmd.BOMFile != "" {

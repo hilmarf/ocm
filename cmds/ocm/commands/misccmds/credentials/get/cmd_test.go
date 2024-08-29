@@ -3,14 +3,14 @@ package get_test
 import (
 	"bytes"
 
+	. "github.com/mandelsoft/goutils/testutils"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-	. "github.com/open-component-model/ocm/cmds/ocm/testhelper"
-	. "github.com/open-component-model/ocm/pkg/testutils"
+	. "ocm.software/ocm/cmds/ocm/testhelper"
 
-	"github.com/open-component-model/ocm/pkg/contexts/credentials"
-	"github.com/open-component-model/ocm/pkg/contexts/credentials/builtin/oci/identity"
-	"github.com/open-component-model/ocm/pkg/contexts/credentials/cpi"
+	"ocm.software/ocm/api/credentials"
+	"ocm.software/ocm/api/credentials/builtin/oci/identity"
+	"ocm.software/ocm/api/credentials/cpi"
 )
 
 var _ = Describe("Test Environment", func() {

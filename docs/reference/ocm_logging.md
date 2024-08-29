@@ -2,7 +2,6 @@
 
 ### Description
 
-
 Logging can be configured as part of the ocm config file ([ocm configfile](ocm_configfile.md))
 or by command line options of the [ocm](ocm.md) command. Details about
 the YAML structure of a logging settings can be found on https://github.com/mandelsoft/logging.
@@ -18,16 +17,18 @@ The following *tags* are used by the command line tool:
 
 The following *realms* are used by the command line tool:
   - <code>ocm</code>: general realm used for the ocm go library.
-  - <code>ocm/NPM</code>: NPM registry
   - <code>ocm/accessmethod/ociartifact</code>: access method ociArtifact
   - <code>ocm/accessmethod/wget</code>: access method for wget
   - <code>ocm/blobaccess/wget</code>: blob access for wget
   - <code>ocm/compdesc</code>: component descriptor handling
   - <code>ocm/config</code>: configuration management
   - <code>ocm/context</code>: context lifecycle
+  - <code>ocm/credentials</code>: Credentials
   - <code>ocm/credentials/dockerconfig</code>: docker config handling as credential repository
   - <code>ocm/credentials/vault</code>: HashiCorp Vault Access
   - <code>ocm/downloader</code>: Downloaders
+  - <code>ocm/maven</code>: Maven repository
+  - <code>ocm/npm</code>: NPM registry
   - <code>ocm/oci/mapping</code>: OCM to OCI Registry Mapping
   - <code>ocm/oci/ocireg</code>: OCI repository handling
   - <code>ocm/plugins</code>: OCM plugin handling
@@ -38,10 +39,9 @@ The following *realms* are used by the command line tool:
   - <code>ocm/valuemerge</code>: value marge handling
 
 
-
 ### Examples
 
-```
+```yaml
 type: logging.config.ocm.software
     contextType: attributes.context.ocm.software
     settings:
@@ -52,7 +52,7 @@ type: logging.config.ocm.software
 
 ### SEE ALSO
 
-##### Parents
+#### Parents
 
 * [ocm](ocm.md)	 &mdash; Open Component Model command line client
 

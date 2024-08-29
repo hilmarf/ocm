@@ -3,20 +3,15 @@ package dockermulti
 import (
 	"fmt"
 
-	. "github.com/mandelsoft/goutils/finalizer"
-
 	"k8s.io/apimachinery/pkg/util/validation/field"
 
-	"github.com/open-component-model/ocm/cmds/ocm/commands/ocmcmds/common/inputs"
-	ociartifact2 "github.com/open-component-model/ocm/cmds/ocm/commands/ocmcmds/common/inputs/types/ociartifact"
-	"github.com/open-component-model/ocm/pkg/blobaccess"
-	"github.com/open-component-model/ocm/pkg/blobaccess/dockermulti"
-	"github.com/open-component-model/ocm/pkg/contexts/clictx"
-	"github.com/open-component-model/ocm/pkg/contexts/oci"
-	"github.com/open-component-model/ocm/pkg/contexts/oci/repositories/artifactset"
-	"github.com/open-component-model/ocm/pkg/contexts/oci/repositories/docker"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm/accessmethods/ociartifact"
-	"github.com/open-component-model/ocm/pkg/runtime"
+	"ocm.software/ocm/api/oci/extensions/repositories/docker"
+	"ocm.software/ocm/api/ocm/extensions/accessmethods/ociartifact"
+	"ocm.software/ocm/api/utils/blobaccess"
+	"ocm.software/ocm/api/utils/blobaccess/dockermulti"
+	"ocm.software/ocm/api/utils/runtime"
+	"ocm.software/ocm/cmds/ocm/commands/ocmcmds/common/inputs"
+	ociartifact2 "ocm.software/ocm/cmds/ocm/commands/ocmcmds/common/inputs/types/ociartifact"
 )
 
 type Spec struct {
@@ -63,36 +58,8 @@ func (s *Spec) Validate(fldPath *field.Path, ctx inputs.Context, inputFilePath s
 	return allErrs
 }
 
-func (s *Spec) getVariant(ctx clictx.Context, finalize *Finalizer, variant string) (oci.ArtifactAccess, error) {
-	locator, version, err := docker.ParseGenericRef(variant)
-	if err != nil {
-		return nil, err
-	}
-	if version == "" {
-		return nil, fmt.Errorf("artifact version required")
-	}
-	spec := docker.NewRepositorySpec()
-	repo, err := ctx.OCIContext().RepositoryForSpec(spec)
-	if err != nil {
-		return nil, err
-	}
-	finalize.Close(repo)
-	ns, err := repo.LookupNamespace(locator)
-	if err != nil {
-		return nil, err
-	}
-	finalize.Close(ns)
-
-	art, err := ns.GetArtifact(version)
-	if err != nil {
-		return nil, artifactset.GetArtifactError{Original: err, Ref: locator + ":" + version}
-	}
-	finalize.Close(art)
-	return art, nil
-}
-
 func (s *Spec) GetBlob(ctx inputs.Context, info inputs.InputResourceInfo) (blobaccess.BlobAccess, string, error) {
-	blob, err := dockermulti.BlobAccessForMultiImageFromDockerDaemon(
+	blob, err := dockermulti.BlobAccess(
 		dockermulti.WithContext(ctx),
 		dockermulti.WithPrinter(ctx.Printer()),
 		dockermulti.WithVariants(s.Variants...),

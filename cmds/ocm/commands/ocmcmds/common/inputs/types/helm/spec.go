@@ -4,11 +4,11 @@ import (
 	"github.com/mandelsoft/goutils/errors"
 	"k8s.io/apimachinery/pkg/util/validation/field"
 
-	"github.com/open-component-model/ocm/cmds/ocm/commands/ocmcmds/common/inputs"
-	"github.com/open-component-model/ocm/cmds/ocm/commands/ocmcmds/common/inputs/cpi"
-	"github.com/open-component-model/ocm/pkg/blobaccess"
-	"github.com/open-component-model/ocm/pkg/blobaccess/helm"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm/accessmethods/ociartifact"
+	"ocm.software/ocm/api/ocm/extensions/accessmethods/ociartifact"
+	"ocm.software/ocm/api/utils/blobaccess"
+	"ocm.software/ocm/api/utils/blobaccess/helm"
+	"ocm.software/ocm/cmds/ocm/commands/ocmcmds/common/inputs"
+	"ocm.software/ocm/cmds/ocm/commands/ocmcmds/common/inputs/cpi"
 )
 
 type Spec struct {
@@ -51,11 +51,12 @@ func (s *Spec) Validate(fldPath *field.Path, ctx inputs.Context, inputFilePath s
 		if s.CACertFile != "" {
 			path = fldPath.Child("caCertFile")
 			inputInfo, filePath, err := inputs.FileInfo(ctx, s.CACertFile, inputFilePath)
-			if err != nil {
+			switch {
+			case err != nil:
 				allErrs = append(allErrs, field.Invalid(path, filePath, err.Error()))
-			} else if !inputInfo.Mode().IsRegular() {
+			case !inputInfo.Mode().IsRegular():
 				allErrs = append(allErrs, field.Invalid(path, filePath, "caCertFile is no regular file"))
-			} else {
+			default:
 				_, err = LoadCertificateBundle(s.CACertFile, ctx.FileSystem())
 				if err != nil {
 					allErrs = append(allErrs, field.Invalid(path, s.CACertFile, err.Error()))
@@ -99,7 +100,7 @@ func (s *Spec) GetBlob(ctx inputs.Context, info inputs.InputResourceInfo) (blob 
 		override = false
 	}
 
-	blob, name, vers, err := helm.BlobAccessForHelmChart(path,
+	blob, name, vers, err := helm.BlobAccess(path,
 		helm.WithContext(ctx),
 		helm.WithFileSystem(ctx.FileSystem()),
 		helm.WithPrinter(ctx.Printer()),

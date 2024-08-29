@@ -5,8 +5,8 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/open-component-model/ocm/pkg/contexts/clictx"
-	"github.com/open-component-model/ocm/pkg/contexts/oci/repositories/ctf"
+	clictx "ocm.software/ocm/api/cli"
+	"ocm.software/ocm/api/oci/extensions/repositories/ctf"
 )
 
 func New(ctx clictx.Context) *cobra.Command {
@@ -58,7 +58,7 @@ or
 </center>
 
 Notice that this notation optionally also allows a double slash to
-seperate &lt;domain>[:&lt;port>] and &lt;repository>. While it is
+separate &lt;domain>[:&lt;port>] and &lt;repository>. While it is
 not necessary for unambiguous parsing here, it is supported for
 consistency with the other notations.
 

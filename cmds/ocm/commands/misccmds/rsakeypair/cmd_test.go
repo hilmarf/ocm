@@ -5,19 +5,19 @@ import (
 	"crypto/x509/pkix"
 	"encoding/pem"
 
+	. "github.com/mandelsoft/goutils/testutils"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-	. "github.com/open-component-model/ocm/cmds/ocm/testhelper"
-	. "github.com/open-component-model/ocm/pkg/testutils"
+	. "ocm.software/ocm/cmds/ocm/testhelper"
 
 	"github.com/opencontainers/go-digest"
 
-	"github.com/open-component-model/ocm/pkg/contexts/credentials"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm/attrs/signingattr"
-	"github.com/open-component-model/ocm/pkg/encrypt"
-	"github.com/open-component-model/ocm/pkg/signing"
-	"github.com/open-component-model/ocm/pkg/signing/handlers/rsa"
-	"github.com/open-component-model/ocm/pkg/signing/signutils"
+	"ocm.software/ocm/api/credentials"
+	"ocm.software/ocm/api/ocm/extensions/attrs/signingattr"
+	"ocm.software/ocm/api/tech/signing"
+	"ocm.software/ocm/api/tech/signing/handlers/rsa"
+	"ocm.software/ocm/api/tech/signing/signutils"
+	"ocm.software/ocm/api/utils/encrypt"
 )
 
 var ISSUER = &pkix.Name{CommonName: "mandelsoft"}
@@ -38,7 +38,6 @@ var _ = Describe("Test Environment", func() {
 	})
 
 	It("create key pair", func() {
-
 		buf := bytes.NewBuffer(nil)
 		Expect(env.CatchOutput(buf).Execute("create", "rsakeypair", "key.priv")).To(Succeed())
 		Expect(buf.String()).To(StringEqualTrimmedWithContext(`
@@ -67,7 +66,6 @@ created rsa key pair key.priv[key.pub]
 	})
 
 	It("create self-signed key pair", func() {
-
 		buf := bytes.NewBuffer(nil)
 		Expect(env.CatchOutput(buf).Execute("create", "rsakeypair", "key.priv", "CN=mandelsoft")).To(Succeed())
 		Expect(buf.String()).To(StringEqualTrimmedWithContext(`

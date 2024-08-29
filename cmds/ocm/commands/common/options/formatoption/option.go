@@ -2,16 +2,16 @@ package formatoption
 
 import (
 	"fmt"
+	"sort"
 	"strings"
 
 	"github.com/mandelsoft/vfs/pkg/vfs"
 	"github.com/spf13/pflag"
 
-	"github.com/open-component-model/ocm/cmds/ocm/pkg/options"
-	"github.com/open-component-model/ocm/pkg/common/accessio"
-	"github.com/open-component-model/ocm/pkg/common/accessobj"
-	"github.com/open-component-model/ocm/pkg/contexts/clictx"
-	"github.com/open-component-model/ocm/pkg/utils"
+	clictx "ocm.software/ocm/api/cli"
+	"ocm.software/ocm/api/utils/accessio"
+	"ocm.software/ocm/api/utils/accessobj"
+	"ocm.software/ocm/cmds/ocm/common/options"
 )
 
 func From(o options.OptionSetProvider) *Option {
@@ -65,13 +65,14 @@ func (o *Option) Usage() string {
 	o.setDefault()
 	s := `
 The <code>--type</code> option accepts a file format for the
-target archive to use. The following formats are supported:
+target archive to use. It is only evaluated if the target 
+archive does not exist yet. The following formats are supported:
 `
-	list := utils.StringSlice{}
+	list := []string{}
 	for k := range accessobj.GetFormats() {
-		list.Add(k.String())
+		list = append(list, k.String())
 	}
-	list.Sort()
+	sort.Strings(list)
 	for _, k := range list {
 		s = s + "- " + k + "\n"
 	}

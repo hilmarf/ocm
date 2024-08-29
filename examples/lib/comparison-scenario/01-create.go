@@ -4,16 +4,17 @@ import (
 	"fmt"
 
 	"github.com/mandelsoft/goutils/errors"
-	"github.com/open-component-model/ocm/examples/lib/helper"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm"
-	metav1 "github.com/open-component-model/ocm/pkg/contexts/ocm/compdesc/meta/v1"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm/elements"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm/elements/artifactaccess/helmaccess"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm/elements/artifactaccess/ociartifactaccess"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm/elements/artifactblob/fileblob"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm/repositories/composition"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm/resourcetypes"
-	"github.com/open-component-model/ocm/pkg/mime"
+
+	"ocm.software/ocm/api/ocm"
+	metav1 "ocm.software/ocm/api/ocm/compdesc/meta/v1"
+	"ocm.software/ocm/api/ocm/elements"
+	"ocm.software/ocm/api/ocm/elements/artifactaccess/helmaccess"
+	"ocm.software/ocm/api/ocm/elements/artifactaccess/ociartifactaccess"
+	"ocm.software/ocm/api/ocm/elements/artifactblob/fileblob"
+	resourcetypes "ocm.software/ocm/api/ocm/extensions/artifacttypes"
+	"ocm.software/ocm/api/ocm/extensions/repositories/composition"
+	"ocm.software/ocm/api/utils/mime"
+	"ocm.software/ocm/examples/lib/helper"
 )
 
 const (
@@ -58,7 +59,7 @@ func CreateComponentVersion(ctx ocm.Context) (ocm.ComponentVersionAccess, error)
 		return nil, errors.Wrapf(err, "cannot create resource meta for podinfo-image")
 	}
 	image_res := ociartifactaccess.ResourceAccess(ctx, image_meta, PODINFO_IMAGE)
-	err = cv.SetResourceAccess(image_res)
+	err = cv.SetResourceByAccess(image_res)
 	if err != nil {
 		return nil, errors.Wrapf(err, "cannot add resource podinfo-image")
 	}
@@ -69,7 +70,7 @@ func CreateComponentVersion(ctx ocm.Context) (ocm.ComponentVersionAccess, error)
 		return nil, errors.Wrapf(err, "cannot create resource meta for helmchart")
 	}
 	helm_res := helmaccess.ResourceAccess(ctx, helm_meta, HELMCHART_NAME, HELMCHART_REPO)
-	err = cv.SetResourceAccess(helm_res)
+	err = cv.SetResourceByAccess(helm_res)
 	if err != nil {
 		return nil, errors.Wrapf(err, "cannot add resource helmchart")
 	}
@@ -81,7 +82,7 @@ func CreateComponentVersion(ctx ocm.Context) (ocm.ComponentVersionAccess, error)
 	}
 	script_res := fileblob.ResourceAccess(ctx, mime.MIME_YAML, script_meta, "resources/deployscript")
 
-	err = cv.SetResourceAccess(script_res)
+	err = cv.SetResourceByAccess(script_res)
 	if err != nil {
 		return nil, errors.Wrapf(err, "cannot add resource helmchart")
 	}

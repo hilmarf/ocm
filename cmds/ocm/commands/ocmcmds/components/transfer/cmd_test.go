@@ -4,41 +4,43 @@ import (
 	"bytes"
 	"encoding/json"
 
+	. "github.com/mandelsoft/goutils/testutils"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-	. "github.com/open-component-model/ocm/cmds/ocm/testhelper"
-	. "github.com/open-component-model/ocm/pkg/contexts/oci/testhelper"
-	. "github.com/open-component-model/ocm/pkg/testutils"
+	. "ocm.software/ocm/api/oci/testhelper"
+	. "ocm.software/ocm/cmds/ocm/testhelper"
 
 	"github.com/spf13/cobra"
 
-	"github.com/open-component-model/ocm/pkg/common/accessio"
-	"github.com/open-component-model/ocm/pkg/common/accessobj"
-	"github.com/open-component-model/ocm/pkg/contexts/clictx"
-	"github.com/open-component-model/ocm/pkg/contexts/config/config"
-	"github.com/open-component-model/ocm/pkg/contexts/oci"
-	"github.com/open-component-model/ocm/pkg/contexts/oci/artdesc"
-	"github.com/open-component-model/ocm/pkg/contexts/oci/repositories/artifactset"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm/accessmethods/ociartifact"
-	metav1 "github.com/open-component-model/ocm/pkg/contexts/ocm/compdesc/meta/v1"
-	ctfocm "github.com/open-component-model/ocm/pkg/contexts/ocm/repositories/ctf"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm/resourcetypes"
-	handlercfg "github.com/open-component-model/ocm/pkg/contexts/ocm/transfer/transferhandler/config"
-	ocmutils "github.com/open-component-model/ocm/pkg/contexts/ocm/utils"
-	"github.com/open-component-model/ocm/pkg/mime"
-	"github.com/open-component-model/ocm/pkg/utils"
+	clictx "ocm.software/ocm/api/cli"
+	"ocm.software/ocm/api/config/extensions/config"
+	"ocm.software/ocm/api/oci"
+	"ocm.software/ocm/api/oci/artdesc"
+	"ocm.software/ocm/api/oci/extensions/repositories/artifactset"
+	"ocm.software/ocm/api/ocm"
+	metav1 "ocm.software/ocm/api/ocm/compdesc/meta/v1"
+	"ocm.software/ocm/api/ocm/extensions/accessmethods/ociartifact"
+	resourcetypes "ocm.software/ocm/api/ocm/extensions/artifacttypes"
+	ctfocm "ocm.software/ocm/api/ocm/extensions/repositories/ctf"
+	ocmutils "ocm.software/ocm/api/ocm/ocmutils"
+	handlercfg "ocm.software/ocm/api/ocm/tools/transfer/transferhandler/config"
+	"ocm.software/ocm/api/utils"
+	"ocm.software/ocm/api/utils/accessio"
+	"ocm.software/ocm/api/utils/accessobj"
+	"ocm.software/ocm/api/utils/mime"
 )
 
-const ARCH = "/tmp/ctf"
-const ARCH2 = "/tmp/ctf2"
-const PROVIDER = "mandelsoft"
-const VERSION = "v1"
-const COMPONENT = "github.com/mandelsoft/test"
-const COMPONENT2 = "github.com/mandelsoft/test2"
-const OUT = "/tmp/res"
-const OCIPATH = "/tmp/oci"
-const OCIHOST = "alias"
+const (
+	ARCH       = "/tmp/ctf"
+	ARCH2      = "/tmp/ctf2"
+	PROVIDER   = "mandelsoft"
+	VERSION    = "v1"
+	COMPONENT  = "github.com/mandelsoft/test"
+	COMPONENT2 = "github.com/mandelsoft/test2"
+	OUT        = "/tmp/res"
+	OCIPATH    = "/tmp/oci"
+	OCIHOST    = "alias"
+)
 
 func CheckComponentInArchive(env *TestEnv, ldesc *artdesc.Descriptor, out string) {
 	tgt, err := ctfocm.Open(env.OCMContext(), accessobj.ACC_READONLY, out, 0, accessio.PathFileSystem(env.FileSystem()))
@@ -251,7 +253,6 @@ transferring version "github.com/mandelsoft/test:v1"...
 	})
 
 	It("transfers ctf to ctf+tgz with config option", func() {
-
 		cfg := handlercfg.NewConfig()
 		cfg.ResourcesByValue = utils.BoolP(true)
 

@@ -5,17 +5,20 @@ import (
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-	. "github.com/open-component-model/ocm/cmds/ocm/testhelper"
+	. "ocm.software/ocm/cmds/ocm/testhelper"
 
-	"github.com/open-component-model/ocm/pkg/contexts/ocm/compdesc"
-	metav1 "github.com/open-component-model/ocm/pkg/contexts/ocm/compdesc/meta/v1"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm/repositories/comparch"
-	"github.com/open-component-model/ocm/pkg/testutils"
+	"github.com/mandelsoft/goutils/testutils"
+
+	"ocm.software/ocm/api/ocm/compdesc"
+	metav1 "ocm.software/ocm/api/ocm/compdesc/meta/v1"
+	"ocm.software/ocm/api/ocm/extensions/repositories/comparch"
 )
 
-const ARCH = "/tmp/ca"
-const VERSION = "v1.1.1"
-const REF = "github.com/mandelsoft/ref"
+const (
+	ARCH    = "/tmp/ca"
+	VERSION = "v1.1.1"
+	REF     = "github.com/mandelsoft/ref"
+)
 
 func CheckReference(env *TestEnv, cd *compdesc.ComponentDescriptor, name string, add ...func(compdesc.ComponentReference)) {
 	rs, _ := cd.GetReferencesByName(name)
@@ -86,6 +89,15 @@ var _ = Describe("Add references", func() {
 		Expect(len(cd.References)).To(Equal(1))
 
 		CheckReference(env, cd, "testdata")
+	})
+
+	It("adds duplicate references", func() {
+		Expect(env.Execute("add", "references", "--file", ARCH, "/testdata/dupreferences.yaml")).To(Succeed())
+		data, err := env.ReadFile(env.Join(ARCH, comparch.ComponentDescriptorFileName))
+		Expect(err).To(Succeed())
+		cd, err := compdesc.Decode(data)
+		Expect(err).To(Succeed())
+		Expect(len(cd.References)).To(Equal(2))
 	})
 
 	Context("reference by options", func() {

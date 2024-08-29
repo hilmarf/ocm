@@ -4,44 +4,50 @@ import (
 	"bytes"
 	"os"
 
+	. "github.com/mandelsoft/goutils/testutils"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-	. "github.com/open-component-model/ocm/cmds/ocm/testhelper"
-	. "github.com/open-component-model/ocm/pkg/contexts/oci/testhelper"
-	. "github.com/open-component-model/ocm/pkg/contexts/ocm/signing"
-	. "github.com/open-component-model/ocm/pkg/testutils"
+	. "ocm.software/ocm/api/oci/testhelper"
+	. "ocm.software/ocm/api/ocm/tools/signing"
+	. "ocm.software/ocm/cmds/ocm/testhelper"
 
 	"github.com/mandelsoft/logging"
 	"github.com/mandelsoft/vfs/pkg/vfs"
 
-	"github.com/open-component-model/ocm/pkg/common/accessio"
-	"github.com/open-component-model/ocm/pkg/common/accessobj"
-	"github.com/open-component-model/ocm/pkg/contexts/datacontext"
-	"github.com/open-component-model/ocm/pkg/contexts/oci"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm/accessmethods/ociartifact"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm/attrs/signingattr"
-	metav1 "github.com/open-component-model/ocm/pkg/contexts/ocm/compdesc/meta/v1"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm/repositories/ctf"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm/resourcetypes"
-	"github.com/open-component-model/ocm/pkg/mime"
-	"github.com/open-component-model/ocm/pkg/signing/handlers/rsa"
+	"ocm.software/ocm/api/datacontext"
+	"ocm.software/ocm/api/oci"
+	"ocm.software/ocm/api/ocm"
+	metav1 "ocm.software/ocm/api/ocm/compdesc/meta/v1"
+	"ocm.software/ocm/api/ocm/extensions/accessmethods/ociartifact"
+	resourcetypes "ocm.software/ocm/api/ocm/extensions/artifacttypes"
+	"ocm.software/ocm/api/ocm/extensions/attrs/signingattr"
+	"ocm.software/ocm/api/ocm/extensions/repositories/ctf"
+	"ocm.software/ocm/api/tech/signing/handlers/rsa"
+	"ocm.software/ocm/api/utils/accessio"
+	"ocm.software/ocm/api/utils/accessobj"
+	"ocm.software/ocm/api/utils/mime"
 )
 
-const ARCH = "/tmp/ctf"
-const PROVIDER = "mandelsoft"
-const VERSION = "v1"
-const COMPONENTA = "github.com/mandelsoft/test"
-const COMPONENTB = "github.com/mandelsoft/ref"
-const OUT = "/tmp/res"
-const OCIPATH = "/tmp/oci"
-const OCIHOST = "alias"
+const (
+	ARCH       = "/tmp/ctf"
+	PROVIDER   = "mandelsoft"
+	VERSION    = "v1"
+	COMPONENTA = "github.com/mandelsoft/test"
+	COMPONENTB = "github.com/mandelsoft/ref"
+	OUT        = "/tmp/res"
+	OCIPATH    = "/tmp/oci"
+	OCIHOST    = "alias"
+)
 
-const SIGNATURE = "test"
-const SIGN_ALGO = rsa.Algorithm
+const (
+	SIGNATURE = "test"
+	SIGN_ALGO = rsa.Algorithm
+)
 
-const PUBKEY = "/tmp/pub"
-const PRIVKEY = "/tmp/priv"
+const (
+	PUBKEY  = "/tmp/pub"
+	PRIVKEY = "/tmp/priv"
+)
 
 var _ = Describe("access method", func() {
 	var (

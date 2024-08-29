@@ -8,22 +8,22 @@ import (
 	"github.com/mandelsoft/vfs/pkg/vfs"
 	"github.com/spf13/cobra"
 
-	"github.com/open-component-model/ocm/cmds/ocm/commands/common/options/closureoption"
-	ocmcommon "github.com/open-component-model/ocm/cmds/ocm/commands/ocmcmds/common"
-	"github.com/open-component-model/ocm/cmds/ocm/commands/ocmcmds/common/handlers/comphdlr"
-	"github.com/open-component-model/ocm/cmds/ocm/commands/ocmcmds/common/options/hashoption"
-	"github.com/open-component-model/ocm/cmds/ocm/commands/ocmcmds/common/options/lookupoption"
-	"github.com/open-component-model/ocm/cmds/ocm/commands/ocmcmds/common/options/repooption"
-	"github.com/open-component-model/ocm/cmds/ocm/commands/ocmcmds/common/options/versionconstraintsoption"
-	"github.com/open-component-model/ocm/cmds/ocm/commands/ocmcmds/names"
-	"github.com/open-component-model/ocm/cmds/ocm/commands/verbs"
-	"github.com/open-component-model/ocm/cmds/ocm/pkg/output"
-	"github.com/open-component-model/ocm/cmds/ocm/pkg/processing"
-	"github.com/open-component-model/ocm/cmds/ocm/pkg/utils"
-	"github.com/open-component-model/ocm/pkg/common"
-	"github.com/open-component-model/ocm/pkg/contexts/clictx"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm/compdesc"
+	clictx "ocm.software/ocm/api/cli"
+	"ocm.software/ocm/api/ocm"
+	"ocm.software/ocm/api/ocm/compdesc"
+	common "ocm.software/ocm/api/utils/misc"
+	"ocm.software/ocm/cmds/ocm/commands/common/options/closureoption"
+	ocmcommon "ocm.software/ocm/cmds/ocm/commands/ocmcmds/common"
+	"ocm.software/ocm/cmds/ocm/commands/ocmcmds/common/handlers/comphdlr"
+	"ocm.software/ocm/cmds/ocm/commands/ocmcmds/common/options/hashoption"
+	"ocm.software/ocm/cmds/ocm/commands/ocmcmds/common/options/lookupoption"
+	"ocm.software/ocm/cmds/ocm/commands/ocmcmds/common/options/repooption"
+	"ocm.software/ocm/cmds/ocm/commands/ocmcmds/common/options/versionconstraintsoption"
+	"ocm.software/ocm/cmds/ocm/commands/ocmcmds/names"
+	"ocm.software/ocm/cmds/ocm/commands/verbs"
+	"ocm.software/ocm/cmds/ocm/common/output"
+	"ocm.software/ocm/cmds/ocm/common/processing"
+	"ocm.software/ocm/cmds/ocm/common/utils"
 )
 
 var (
@@ -61,6 +61,7 @@ all versions are listed.
 $ ocm hash componentversion ghcr.io/mandelsoft/kubelink
 $ ocm hash componentversion --repo OCIRegistry::ghcr.io mandelsoft/kubelink
 `,
+		Annotations: map[string]string{"ExampleCodeStyle": "bash"},
 	}
 }
 
@@ -179,9 +180,7 @@ func (h *action) Close() error {
 func (h *action) Out() error {
 	if len(h.norms) > 1 {
 		dir := h.mode.outfile
-		if strings.HasSuffix(dir, ".ncd") {
-			dir = dir[:len(dir)-4]
-		}
+		dir = strings.TrimSuffix(dir, ".ncd")
 		err := h.ctx.FileSystem().Mkdir(dir, 0o755)
 		if err != nil {
 			return fmt.Errorf("cannot create output dir %s", dir)
@@ -249,7 +248,7 @@ func (h *action) _manifester(e interface{}) *Manifest {
 
 	if p.Descriptor == nil {
 		if p.Error == nil {
-			m.Error = fmt.Sprintf("<unknown component version>")
+			m.Error = "<unknown component version>"
 		} else {
 			m.Error = p.Error.Error()
 		}

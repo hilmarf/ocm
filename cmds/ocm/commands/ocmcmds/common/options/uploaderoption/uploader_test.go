@@ -3,14 +3,14 @@ package uploaderoption
 import (
 	"encoding/json"
 
+	. "github.com/mandelsoft/goutils/testutils"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-	. "github.com/open-component-model/ocm/pkg/testutils"
 
 	"github.com/spf13/pflag"
 
-	"github.com/open-component-model/ocm/cmds/ocm/commands/ocmcmds/common/options/optutils"
-	"github.com/open-component-model/ocm/pkg/contexts/clictx"
+	clictx "ocm.software/ocm/api/cli"
+	"ocm.software/ocm/cmds/ocm/commands/ocmcmds/common/options/optutils"
 )
 
 var _ = Describe("uploader option", func() {

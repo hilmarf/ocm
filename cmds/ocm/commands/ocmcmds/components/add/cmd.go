@@ -3,34 +3,35 @@ package add
 import (
 	"fmt"
 
+	"github.com/mandelsoft/goutils/errors"
 	"github.com/mandelsoft/goutils/general"
 	"github.com/mandelsoft/vfs/pkg/vfs"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 
-	"github.com/mandelsoft/goutils/errors"
-	"github.com/open-component-model/ocm/cmds/ocm/commands/common/options/formatoption"
-	"github.com/open-component-model/ocm/cmds/ocm/commands/ocmcmds/common"
-	"github.com/open-component-model/ocm/cmds/ocm/commands/ocmcmds/common/addhdlrs"
-	"github.com/open-component-model/ocm/cmds/ocm/commands/ocmcmds/common/addhdlrs/comp"
-	"github.com/open-component-model/ocm/cmds/ocm/commands/ocmcmds/common/options/dryrunoption"
-	"github.com/open-component-model/ocm/cmds/ocm/commands/ocmcmds/common/options/fileoption"
-	"github.com/open-component-model/ocm/cmds/ocm/commands/ocmcmds/common/options/lookupoption"
-	"github.com/open-component-model/ocm/cmds/ocm/commands/ocmcmds/common/options/rscbyvalueoption"
-	"github.com/open-component-model/ocm/cmds/ocm/commands/ocmcmds/common/options/schemaoption"
-	"github.com/open-component-model/ocm/cmds/ocm/commands/ocmcmds/common/options/templateroption"
-	"github.com/open-component-model/ocm/cmds/ocm/commands/ocmcmds/names"
-	"github.com/open-component-model/ocm/cmds/ocm/commands/verbs"
-	"github.com/open-component-model/ocm/cmds/ocm/pkg/utils"
-	topicocmlabels "github.com/open-component-model/ocm/cmds/ocm/topics/ocm/labels"
-	common2 "github.com/open-component-model/ocm/pkg/common"
-	"github.com/open-component-model/ocm/pkg/common/accessio"
-	"github.com/open-component-model/ocm/pkg/common/accessobj"
-	"github.com/open-component-model/ocm/pkg/contexts/clictx"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm/compdesc"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm/repositories/ctf"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm/transfer/transferhandler/standard"
+	clictx "ocm.software/ocm/api/cli"
+	"ocm.software/ocm/api/ocm"
+	"ocm.software/ocm/api/ocm/compdesc"
+	"ocm.software/ocm/api/ocm/extensions/repositories/ctf"
+	"ocm.software/ocm/api/ocm/tools/transfer/transferhandler/standard"
+	"ocm.software/ocm/api/utils/accessio"
+	"ocm.software/ocm/api/utils/accessobj"
+	common2 "ocm.software/ocm/api/utils/misc"
+	"ocm.software/ocm/cmds/ocm/commands/common/options/formatoption"
+	"ocm.software/ocm/cmds/ocm/commands/ocmcmds/common"
+	"ocm.software/ocm/cmds/ocm/commands/ocmcmds/common/addhdlrs"
+	"ocm.software/ocm/cmds/ocm/commands/ocmcmds/common/addhdlrs/comp"
+	"ocm.software/ocm/cmds/ocm/commands/ocmcmds/common/options/dryrunoption"
+	"ocm.software/ocm/cmds/ocm/commands/ocmcmds/common/options/fileoption"
+	"ocm.software/ocm/cmds/ocm/commands/ocmcmds/common/options/lookupoption"
+	"ocm.software/ocm/cmds/ocm/commands/ocmcmds/common/options/rscbyvalueoption"
+	"ocm.software/ocm/cmds/ocm/commands/ocmcmds/common/options/schemaoption"
+	"ocm.software/ocm/cmds/ocm/commands/ocmcmds/common/options/templateroption"
+	"ocm.software/ocm/cmds/ocm/commands/ocmcmds/common/options/uploaderoption"
+	"ocm.software/ocm/cmds/ocm/commands/ocmcmds/names"
+	"ocm.software/ocm/cmds/ocm/commands/verbs"
+	"ocm.software/ocm/cmds/ocm/common/utils"
+	topicocmlabels "ocm.software/ocm/cmds/ocm/topics/ocm/labels"
 )
 
 var (
@@ -45,26 +46,31 @@ type Command struct {
 	Create  bool
 	Closure bool
 
-	Handler ctf.FormatHandler
-	Format  string
+	FormatHandler ctf.FormatHandler
+	Format        string
 
 	Version string
-	Envs    []string
+
+	Envs []string
 
 	Archive string
+
+	Options addhdlrs.Options
 
 	Elements []addhdlrs.ElementSource
 }
 
 func NewCommand(ctx clictx.Context, names ...string) *cobra.Command {
-	return utils.SetupCommand(&Command{BaseCommand: utils.NewBaseCommand(ctx,
-		formatoption.New(ctf.GetFormats()...),
-		fileoption.New("transport-archive"),
-		schemaoption.New(compdesc.DefaultSchemeVersion),
-		templateroption.New(""),
-		dryrunoption.New("evaluate and print component specifications", true),
-		lookupoption.New(),
-		rscbyvalueoption.New()),
+	return utils.SetupCommand(&Command{
+		BaseCommand: utils.NewBaseCommand(ctx,
+			formatoption.New(ctf.GetFormats()...),
+			fileoption.New("transport-archive"),
+			schemaoption.New(compdesc.DefaultSchemeVersion),
+			templateroption.New(""),
+			dryrunoption.New("evaluate and print component specifications", true),
+			lookupoption.New(),
+			rscbyvalueoption.New(),
+			uploaderoption.New(ctx.OCMContext())),
 	}, utils.Names(Names, names...)...)
 }
 
@@ -124,6 +130,8 @@ to specify an OCM repository to lookup the missing component versions. If
 additionally the <code>-V</code> is given, the resources of those additional
 components will be added by value.
 
+` + (&addhdlrs.Options{}).Description() + `
+
 The source, resource and reference list can be composed according to the commands
 <CMD>ocm add sources</CMD>, <CMD>ocm add resources</CMD>, <CMD>ocm add references</CMD>,
 respectively.
@@ -138,7 +146,7 @@ entry can be used to specify a dedicated serialization format to use for the
 component descriptor. If given it overrides the <code>--schema</code> option
 of the command. By default, v2 is used.
 
-Various elements support to add arbirary information by using labels
+Various elements support to add arbitrary information by using labels
 (see <CMD>ocm ocm-labels</CMD>).
 `,
 	}
@@ -149,6 +157,7 @@ Various elements support to add arbirary information by using labels
 
 func (o *Command) AddFlags(fs *pflag.FlagSet) {
 	o.BaseCommand.AddFlags(fs)
+	o.Options.AddFlags(fs)
 	fs.BoolVarP(&o.Force, "force", "f", false, "remove existing content")
 	fs.BoolVarP(&o.Create, "create", "c", false, "(re)create archive")
 	fs.BoolVarP(&o.Closure, "complete", "C", false, "include all referenced component version")
@@ -178,9 +187,14 @@ func (o *Command) Complete(args []string) error {
 	}
 
 	format := formatoption.From(o).Format
-	o.Handler = ctf.GetFormat(format)
-	if o.Handler == nil {
+	o.FormatHandler = ctf.GetFormat(format)
+	if o.FormatHandler == nil {
 		return accessio.ErrInvalidFileFormat(format.String())
+	}
+
+	err = uploaderoption.From(o).Register(o)
+	if err != nil {
+		return err
 	}
 
 	return nil
@@ -197,7 +211,7 @@ func (o *Command) Run() error {
 
 	printer := common2.NewPrinter(o.Context.StdOut())
 	fs := o.Context.FileSystem()
-	h := comp.New(o.Version, schemaoption.From(o).Schema)
+	h := comp.New(o.Version, schemaoption.From(o).Schema).WithCLIOptions(&o.Options)
 	elems, ictx, err := addhdlrs.ProcessDescriptions(o.Context, printer, templateroption.From(o).Options, h, o.Elements)
 	if err != nil {
 		return err
@@ -227,7 +241,7 @@ func (o *Command) Run() error {
 	if o.Create {
 		openmode |= accessobj.ACC_CREATE
 	}
-	repo, err := ctf.Open(o.Context.OCMContext(), openmode, fp, mode, o.Handler, fs)
+	repo, err := ctf.Open(o.Context.OCMContext(), openmode, fp, mode, o.FormatHandler, fs)
 	if err != nil {
 		return err
 	}

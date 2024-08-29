@@ -2,19 +2,19 @@
 
 ### Synopsis
 
-```
+```bash
 ocm bootstrap package [<options>] <action> {<component-reference>} {<resource id field>}
 ```
 
-##### Aliases
+#### Aliases
 
-```
+```text
 package, pkg, componentversion, cv, component, comp, c
 ```
 
 ### Options
 
-```
+```text
       --config stringToString   driver config (default [])
   -C, --create-env string       create local filesystem contract to call executor command locally
   -c, --credentials string      credentials file
@@ -26,7 +26,6 @@ package, pkg, componentversion, cv, component, comp, c
 ```
 
 ### Description
-
 
 Use the simple TOI bootstrap mechanism to execute actions for a TOI package resource
 based on the content of an OCM component version and some command input describing
@@ -40,7 +39,7 @@ This resource finally describes an executor image, which will be executed in a
 container with the installation source and (instance specific) user settings.
 The container is just executed, the framework make no assumption about the
 meaning/outcome of the execution. Therefore, any kind of actions can be described and
-issued this way, not on installation handling.
+issued this way, not only installation handling.
 
 The first matching resource of this type is selected. Optionally a set of
 identity attribute can be specified used to refine the match. This can be the
@@ -176,16 +175,15 @@ it only contains a single component version. Therefore, in this scenario
 this option must always be specified to be able to follow component
 references.
 
-
 ### Examples
 
-```
+```bash
 $ ocm toi bootstrap package ghcr.io/mandelsoft/ocm//ocmdemoinstaller:0.0.1-dev
 ```
 
 ### SEE ALSO
 
-##### Parents
+#### Parents
 
 * [ocm bootstrap](ocm_bootstrap.md)	 &mdash; bootstrap components
 * [ocm](ocm.md)	 &mdash; Open Component Model command line client
@@ -201,5 +199,4 @@ $ ocm toi bootstrap package ghcr.io/mandelsoft/ocm//ocmdemoinstaller:0.0.1-dev
 
 * [<b>ocm toi-bootstrapping</b>](ocm_toi-bootstrapping.md)	 &mdash; Tiny OCM Installer based on component versions
 * [<b>ocm bootstrap configuration</b>](ocm_bootstrap_configuration.md)	 &mdash; bootstrap TOI configuration files
-* [<b>ocm toi-bootstrapping</b>](ocm_toi-bootstrapping.md)	 &mdash; Tiny OCM Installer based on component versions
 

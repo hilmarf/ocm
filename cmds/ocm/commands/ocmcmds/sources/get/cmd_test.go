@@ -3,20 +3,22 @@ package get_test
 import (
 	"bytes"
 
+	. "github.com/mandelsoft/goutils/testutils"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-	. "github.com/open-component-model/ocm/cmds/ocm/testhelper"
-	. "github.com/open-component-model/ocm/pkg/testutils"
+	. "ocm.software/ocm/cmds/ocm/testhelper"
 
-	"github.com/open-component-model/ocm/pkg/common/accessio"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm"
+	"ocm.software/ocm/api/ocm"
+	"ocm.software/ocm/api/utils/accessio"
 )
 
-const ARCH = "/tmp/ca"
-const VERSION = "v1"
-const COMP = "test.de/x"
-const COMP2 = "test.de/y"
-const PROVIDER = "mandelsoft"
+const (
+	ARCH     = "/tmp/ca"
+	VERSION  = "v1"
+	COMP     = "test.de/x"
+	COMP2    = "test.de/y"
+	PROVIDER = "mandelsoft"
+)
 
 var _ = Describe("Test Environment", func() {
 	var env *TestEnv

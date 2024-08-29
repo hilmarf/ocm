@@ -4,9 +4,10 @@ import (
 	"fmt"
 
 	"github.com/mandelsoft/goutils/errors"
-	"github.com/open-component-model/ocm/examples/lib/helper"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm/signing"
+
+	"ocm.software/ocm/api/ocm"
+	"ocm.software/ocm/api/ocm/tools/signing"
+	"ocm.software/ocm/examples/lib/helper"
 )
 
 func Verify(cfg *helper.Config) error {

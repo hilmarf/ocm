@@ -2,7 +2,6 @@
 
 ### Description
 
-
 Access methods are used to handle the access to the content of artifacts
 described in a component version. Therefore, an artifact entry contains
 an access specification describing the access attributes for the dedicated
@@ -183,6 +182,41 @@ shown below.
 
   Options used to configure fields: <code>--globalAccess</code>, <code>--hint</code>, <code>--mediaType</code>, <code>--reference</code>
 
+- Access type <code>maven</code>
+
+  This method implements the access of a Maven artifact in a Maven repository.
+
+  The following versions are supported:
+  - Version <code>v1</code>
+
+    The type specific specification fields are:
+
+    - **<code>repoUrl</code>** *string*
+
+      URL of the Maven repository
+
+    - **<code>groupId</code>** *string*
+
+      The groupId of the Maven artifact
+
+    - **<code>artifactId</code>** *string*
+
+      The artifactId of the Maven artifact
+
+    - **<code>version</code>** *string*
+
+      The version name of the Maven artifact
+
+    - **<code>classifier</code>** *string*
+
+      The optional classifier of the Maven artifact
+
+    - **<code>extension</code>** *string*
+
+      The optional extension of the Maven artifact
+
+  Options used to configure fields: <code>--accessRepository</code>, <code>--accessVersion</code>, <code>--artifactId</code>, <code>--classifier</code>, <code>--extension</code>, <code>--groupId</code>
+
 - Access type <code>none</code>
 
   dummy resource with no access
@@ -355,10 +389,9 @@ shown below.
 
   Options used to configure fields: <code>--body</code>, <code>--header</code>, <code>--mediaType</code>, <code>--noredirect</code>, <code>--url</code>, <code>--verb</code>
 
-
 ### SEE ALSO
 
-##### Parents
+#### Parents
 
 * [ocm](ocm.md)	 &mdash; Open Component Model command line client
 

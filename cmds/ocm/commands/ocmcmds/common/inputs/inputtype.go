@@ -10,13 +10,13 @@ import (
 	"github.com/modern-go/reflect2"
 	"k8s.io/apimachinery/pkg/util/validation/field"
 
-	"github.com/open-component-model/ocm/pkg/blobaccess"
-	"github.com/open-component-model/ocm/pkg/cobrautils/flagsets"
-	"github.com/open-component-model/ocm/pkg/common"
-	"github.com/open-component-model/ocm/pkg/contexts/clictx"
-	"github.com/open-component-model/ocm/pkg/contexts/datacontext"
-	"github.com/open-component-model/ocm/pkg/runtime"
-	"github.com/open-component-model/ocm/pkg/utils"
+	clictx "ocm.software/ocm/api/cli"
+	"ocm.software/ocm/api/datacontext"
+	"ocm.software/ocm/api/utils"
+	"ocm.software/ocm/api/utils/blobaccess"
+	"ocm.software/ocm/api/utils/cobrautils/flagsets"
+	common "ocm.software/ocm/api/utils/misc"
+	"ocm.software/ocm/api/utils/runtime"
 )
 
 const KIND_INPUTTYPE = "input type"
@@ -96,8 +96,7 @@ func (*InputSpecBase) GetInputVersion(ctx Context) string {
 }
 
 type (
-	InputSpecDecoder  = runtime.TypedObjectDecoder[InputSpec]
-	_InputSpecDecoder = runtime.TypedObjectDecoder[InputSpec]
+	InputSpecDecoder = runtime.TypedObjectDecoder[InputSpec]
 )
 
 type InputType interface {
@@ -210,7 +209,7 @@ func (t *inputTypeScheme) GetInputType(name string) InputType {
 	if d == nil {
 		return nil
 	}
-	return d.(InputType)
+	return d
 }
 
 func (t *inputTypeScheme) Register(rtype InputType) {
@@ -231,7 +230,7 @@ func (t *inputTypeScheme) CreateInputSpec(obj runtime.TypedObject) (InputSpec, e
 		if err != nil {
 			return nil, err
 		}
-		return r.(InputSpec), nil
+		return r, nil
 	}
 	if u, ok := obj.(*runtime.UnstructuredTypedObject); ok {
 		raw, err := u.GetRaw()
@@ -256,7 +255,7 @@ func CreateRepositorySpec(t runtime.TypedObject) (InputSpec, error) {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-const ATTR_INPUT_TYPES = "github.com/open-component-model/ocm/cmds/ocm/common/inputs"
+const ATTR_INPUT_TYPES = "ocm.software/ocm/cmds/ocm/common/inputs"
 
 func For(ctx datacontext.Context) InputTypeScheme {
 	if ctx == nil {

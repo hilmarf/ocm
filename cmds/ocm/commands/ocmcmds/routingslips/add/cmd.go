@@ -9,21 +9,21 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 
-	ocmcommon "github.com/open-component-model/ocm/cmds/ocm/commands/ocmcmds/common"
-	"github.com/open-component-model/ocm/cmds/ocm/commands/ocmcmds/common/handlers/comphdlr"
-	"github.com/open-component-model/ocm/cmds/ocm/commands/ocmcmds/common/options/lookupoption"
-	"github.com/open-component-model/ocm/cmds/ocm/commands/ocmcmds/common/options/repooption"
-	"github.com/open-component-model/ocm/cmds/ocm/commands/ocmcmds/names"
-	"github.com/open-component-model/ocm/cmds/ocm/commands/verbs"
-	"github.com/open-component-model/ocm/cmds/ocm/pkg/output"
-	"github.com/open-component-model/ocm/cmds/ocm/pkg/utils"
-	"github.com/open-component-model/ocm/pkg/cobrautils/flagsets"
-	"github.com/open-component-model/ocm/pkg/contexts/clictx"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm/labels/routingslip"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm/labels/routingslip/spi"
-	"github.com/open-component-model/ocm/pkg/runtime"
-	"github.com/open-component-model/ocm/pkg/signing/handlers/rsa"
+	clictx "ocm.software/ocm/api/cli"
+	"ocm.software/ocm/api/ocm"
+	"ocm.software/ocm/api/ocm/extensions/labels/routingslip"
+	"ocm.software/ocm/api/ocm/extensions/labels/routingslip/spi"
+	"ocm.software/ocm/api/tech/signing/handlers/rsa"
+	"ocm.software/ocm/api/utils/cobrautils/flagsets"
+	"ocm.software/ocm/api/utils/runtime"
+	ocmcommon "ocm.software/ocm/cmds/ocm/commands/ocmcmds/common"
+	"ocm.software/ocm/cmds/ocm/commands/ocmcmds/common/handlers/comphdlr"
+	"ocm.software/ocm/cmds/ocm/commands/ocmcmds/common/options/lookupoption"
+	"ocm.software/ocm/cmds/ocm/commands/ocmcmds/common/options/repooption"
+	"ocm.software/ocm/cmds/ocm/commands/ocmcmds/names"
+	"ocm.software/ocm/cmds/ocm/commands/verbs"
+	"ocm.software/ocm/cmds/ocm/common/output"
+	"ocm.software/ocm/cmds/ocm/common/utils"
 )
 
 const (
@@ -72,6 +72,7 @@ entry for unknown types.
 		Example: `
 $ ocm add routingslip ghcr.io/mandelsoft/ocm//ocmdemoinstaller:0.0.1-dev mandelsoft.org comment --entry "comment=some text"
 `,
+		Annotations: map[string]string{"ExampleCodeStyle": "bash"},
 	}
 	// cmd.AddCommand(topicroutingslips.New(o.Context, "ocm-routingslips"))
 	return cmd
@@ -224,6 +225,9 @@ func (a *action) Out() error {
 		_, err = routingslip.AddEntry(cv, a.cmd.Name, a.cmd.Algorithm, a.cmd.Entry, links)
 	} else {
 		_, err = routingslip.AddEntry(cv, a.cmd.Name, a.cmd.Algorithm, a.cmd.Entry, links, digest.Digest(a.cmd.Digest))
+	}
+	if err != nil {
+		return err
 	}
 	return cv.Update()
 }

@@ -3,12 +3,12 @@ package ocicmds
 import (
 	"github.com/spf13/cobra"
 
-	"github.com/open-component-model/ocm/cmds/ocm/commands/ocicmds/artifacts"
-	"github.com/open-component-model/ocm/cmds/ocm/commands/ocicmds/ctf"
-	"github.com/open-component-model/ocm/cmds/ocm/commands/ocicmds/tags"
-	"github.com/open-component-model/ocm/cmds/ocm/pkg/utils"
-	topicocirefs "github.com/open-component-model/ocm/cmds/ocm/topics/oci/refs"
-	"github.com/open-component-model/ocm/pkg/contexts/clictx"
+	clictx "ocm.software/ocm/api/cli"
+	"ocm.software/ocm/cmds/ocm/commands/ocicmds/artifacts"
+	"ocm.software/ocm/cmds/ocm/commands/ocicmds/ctf"
+	"ocm.software/ocm/cmds/ocm/commands/ocicmds/tags"
+	"ocm.software/ocm/cmds/ocm/common/utils"
+	topicocirefs "ocm.software/ocm/cmds/ocm/topics/oci/refs"
 )
 
 // NewCommand creates a new command.
@@ -20,6 +20,6 @@ func NewCommand(ctx clictx.Context) *cobra.Command {
 	cmd.AddCommand(ctf.NewCommand(ctx))
 	cmd.AddCommand(tags.NewCommand(ctx))
 
-	cmd.AddCommand(topicocirefs.New(ctx))
+	cmd.AddCommand(utils.DocuCommandPath(topicocirefs.New(ctx), "ocm"))
 	return cmd
 }

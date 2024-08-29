@@ -1,4 +1,8 @@
 GOPATH                                         := $(shell go env GOPATH)
+LOCALBIN := $(shell pwd)/../bin
+OS := $(shell go env GOOS 2>/dev/null || sh -c 'uname -o' | sed 's/.*/\L&/' )
+ARCH := $(shell go env GOARCH 2>/dev/null || sh -c 'uname -m' | sed 's/.*/\L&/' )
+OS_ARCH := $(OS)_$(ARCH)
 
 ifeq ($(OS),Windows_NT)
 	detected_OS := Windows
@@ -29,7 +33,7 @@ ifeq ("v$(JQ)","v0.0")
 	deps += $(detected_OS)_jq
 endif
 
-GOLANGCILINT_VERSION := "v1.54.2"
+GOLANGCILINT_VERSION := "v1.59.1"
 GOLANGCILINTV := $(shell (golangci-lint --version 2>/dev/null || echo 0.0.0) | sed 's/.*v\([0-9\.]*\) .*/\1/')
 ifneq ("v$(GOLANGCILINTV)",$(GOLANGCILINT_VERSION))
   deps += golangci-lint
@@ -39,10 +43,40 @@ GO_BINDATA := $(shell (go-bindata -version 2>/dev/null || echo 0.0.0) | head -n 
 ifneq ("v$(GO_BINDATA)",$(GO_BINDATA_VERSION))
 	deps += go-bindata
 endif
+GCI_VERSION := "v0.13.4"
+GCI := $(shell (gci --version 2>/dev/null || echo 0.0) | sed 's/.* \([0-9\.]*\).*/\1/')
+ifneq ("v$(GCI)", $(GCI_VERSION))
+	deps += gci
+endif
+GOFUMPT_VERSION := "v0.6.0"
+GOFUMPT := $(shell (gofumpt --version 2>/dev/null || echo 0.0) | sed 's/\(v[0-9\.]*\).*/\1/')
+ifneq ("$(GOFUMPT)", $(GOFUMPT_VERSION))
+	deps += gofumpt
+endif
+VAULT_VERSION := 1.16.2
+VAULT := $(shell ($(LOCALBIN)/vault --version 2>/dev/null || echo 0.0) | sed 's/.*Vault v\([0-9\.]*\).*/\1/')
+ifneq ($(VAULT), $(VAULT_VERSION))
+	deps += vault
+endif
+OCI_REGISTRY_VERSION := 3.0.0-alpha.1
+OCI_REGISTRY := $(shell (registry --version 2>/dev/null || echo 0.0) | sed 's/.* v\([0-9a-z\.\-]*\).*/\1/')
+ifneq ($(OCI_REGISTRY), $(OCI_REGISTRY_VERSION))
+	deps += oci-registry
+endif
 
 .PHONY: install-requirements
-install-requirements: $(deps) $(GOPATH)/bin/goimports mdref
-#	@$(REPO_ROOT)/hack/install-requirements.sh
+install-requirements: mkbin $(deps) $(GOPATH)/bin/goimports mdref
+
+mkbin:
+	mkdir -p $(LOCALBIN)
+
+.PHONY: gci
+gci:
+	go install -v github.com/daixiang0/gci@$(GCI_VERSION)
+
+.PHONY: gofumpt
+gofumpt:
+	go install -v mvdan.cc/gofumpt@$(GOFUMPT_VERSION)
 
 .PHONY: golangci-lint
 golangci-lint:
@@ -58,13 +92,27 @@ golangci-lint-version:
 go-bindata:
 	go install -v  github.com/go-bindata/go-bindata/v3/...@$(GO_BINDATA_VERSION)
 
+.PHONY: vault
+vault:
+	@if [ "$(VAULT)" != "$(VAULT_VERSION)" ]; then \
+		curl -o $(LOCALBIN)/vault.zip https://releases.hashicorp.com/vault/$(VAULT_VERSION)/vault_$(VAULT_VERSION)_$(OS_ARCH).zip; \
+		unzip -o $(LOCALBIN)/vault.zip -d $(LOCALBIN); \
+		rm $(LOCALBIN)/vault.zip; \
+		chmod a+x $(LOCALBIN)/vault;\
+	fi
+
+.PHONY: oci-registry
+oci-registry:
+	@if [ "$(OCI_REGISTRY)" != "$(OCI_REGISTRY_VERSION)" ]; then \
+		go install -v github.com/distribution/distribution/v3/cmd/registry@v3.0.0-alpha.1; \
+	fi
+
 $(GOPATH)/bin/goimports:
 	go install -v golang.org/x/tools/cmd/goimports@latest
 
 .PHONY: mdref
 mdref:
 	go install -v github.com/mandelsoft/mdref@master
-
 
 Linux_jq:
 	$(info -> jq is missing)

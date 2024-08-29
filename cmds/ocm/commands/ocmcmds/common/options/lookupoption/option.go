@@ -3,11 +3,11 @@ package lookupoption
 import (
 	"github.com/spf13/pflag"
 
-	"github.com/open-component-model/ocm/cmds/ocm/pkg/options"
-	"github.com/open-component-model/ocm/pkg/contexts/clictx"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm/transfer/transferhandler"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm/transfer/transferhandler/standard"
+	clictx "ocm.software/ocm/api/cli"
+	"ocm.software/ocm/api/ocm"
+	"ocm.software/ocm/api/ocm/tools/transfer/transferhandler"
+	"ocm.software/ocm/api/ocm/tools/transfer/transferhandler/standard"
+	"ocm.software/ocm/cmds/ocm/common/options"
 )
 
 func From(o options.OptionSetProvider) *Option {
@@ -26,7 +26,11 @@ type Option struct {
 	Resolver  ocm.ComponentVersionResolver
 }
 
-var _ transferhandler.TransferOption = (*Option)(nil)
+var (
+	_ transferhandler.TransferOption = (*Option)(nil)
+	_ ocm.ComponentVersionResolver   = (*Option)(nil)
+	_ ocm.ComponentResolver          = (*Option)(nil)
+)
 
 func (o *Option) AddFlags(fs *pflag.FlagSet) {
 	fs.StringArrayVarP(&o.RepoSpecs, "lookup", "", nil, "repository name or spec for closure lookup fallback")
@@ -85,6 +89,15 @@ func (o *Option) LookupComponentVersion(name string, vers string) (ocm.Component
 		return nil, err
 	}
 	return cv, err
+}
+
+func (o *Option) LookupComponentProviders(name string) []ocm.ResolvedComponentProvider {
+	if o != nil && o.Resolver != nil {
+		if c, ok := o.Resolver.(ocm.ComponentResolver); ok {
+			return c.LookupComponentProviders(name)
+		}
+	}
+	return nil
 }
 
 func (o *Option) ApplyTransferOption(opts transferhandler.TransferOptions) error {

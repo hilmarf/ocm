@@ -3,13 +3,13 @@ package docker
 import (
 	"k8s.io/apimachinery/pkg/util/validation/field"
 
-	"github.com/open-component-model/ocm/cmds/ocm/commands/ocmcmds/common/inputs"
-	"github.com/open-component-model/ocm/cmds/ocm/commands/ocmcmds/common/inputs/cpi"
-	ociartifact2 "github.com/open-component-model/ocm/cmds/ocm/commands/ocmcmds/common/inputs/types/ociartifact"
-	"github.com/open-component-model/ocm/pkg/blobaccess"
-	"github.com/open-component-model/ocm/pkg/blobaccess/dockerdaemon"
-	"github.com/open-component-model/ocm/pkg/contexts/oci/repositories/docker"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm/accessmethods/ociartifact"
+	"ocm.software/ocm/api/oci/extensions/repositories/docker"
+	"ocm.software/ocm/api/ocm/extensions/accessmethods/ociartifact"
+	"ocm.software/ocm/api/utils/blobaccess"
+	"ocm.software/ocm/api/utils/blobaccess/dockerdaemon"
+	"ocm.software/ocm/cmds/ocm/commands/ocmcmds/common/inputs"
+	"ocm.software/ocm/cmds/ocm/commands/ocmcmds/common/inputs/cpi"
+	ociartifact2 "ocm.software/ocm/cmds/ocm/commands/ocmcmds/common/inputs/types/ociartifact"
 )
 
 type Spec struct {
@@ -43,11 +43,11 @@ func (s *Spec) Validate(fldPath *field.Path, ctx inputs.Context, inputFilePath s
 
 func (s *Spec) GetBlob(ctx inputs.Context, info inputs.InputResourceInfo) (blobaccess.BlobAccess, string, error) {
 	ctx.Printf("image %s\n", s.Path)
-	locator, version, err := docker.ParseGenericRef(s.Path)
+	locator, _, err := docker.ParseGenericRef(s.Path)
 	if err != nil {
 		return nil, "", err
 	}
-	blob, version, err := dockerdaemon.BlobAccessForImageFromDockerDaemon(s.Path, dockerdaemon.WithVersion(info.ComponentVersion.GetVersion()), dockerdaemon.WithOrigin(info.ComponentVersion))
+	blob, version, err := dockerdaemon.BlobAccess(s.Path, dockerdaemon.WithVersion(info.ComponentVersion.GetVersion()), dockerdaemon.WithOrigin(info.ComponentVersion))
 	if err != nil {
 		return nil, "", err
 	}

@@ -8,21 +8,21 @@ import (
 	"github.com/mandelsoft/goutils/errors"
 	"github.com/spf13/pflag"
 
-	"github.com/open-component-model/ocm/cmds/ocm/commands/ocmcmds/common"
-	"github.com/open-component-model/ocm/cmds/ocm/commands/ocmcmds/common/addhdlrs"
-	"github.com/open-component-model/ocm/cmds/ocm/commands/ocmcmds/common/addhdlrs/refs"
-	"github.com/open-component-model/ocm/cmds/ocm/commands/ocmcmds/common/addhdlrs/rscs"
-	"github.com/open-component-model/ocm/cmds/ocm/commands/ocmcmds/common/addhdlrs/srcs"
-	"github.com/open-component-model/ocm/cmds/ocm/commands/ocmcmds/common/inputs"
-	"github.com/open-component-model/ocm/cmds/ocm/pkg/options"
-	"github.com/open-component-model/ocm/cmds/ocm/pkg/utils"
-	"github.com/open-component-model/ocm/pkg/contexts/clictx"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm/attrs/compatattr"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm/compdesc"
-	metav1 "github.com/open-component-model/ocm/pkg/contexts/ocm/compdesc/meta/v1"
-	"github.com/open-component-model/ocm/pkg/errkind"
-	"github.com/open-component-model/ocm/pkg/runtime"
+	clictx "ocm.software/ocm/api/cli"
+	"ocm.software/ocm/api/ocm"
+	"ocm.software/ocm/api/ocm/compdesc"
+	metav1 "ocm.software/ocm/api/ocm/compdesc/meta/v1"
+	"ocm.software/ocm/api/ocm/extensions/attrs/compatattr"
+	"ocm.software/ocm/api/utils/errkind"
+	"ocm.software/ocm/api/utils/runtime"
+	"ocm.software/ocm/cmds/ocm/commands/ocmcmds/common"
+	"ocm.software/ocm/cmds/ocm/commands/ocmcmds/common/addhdlrs"
+	"ocm.software/ocm/cmds/ocm/commands/ocmcmds/common/addhdlrs/refs"
+	"ocm.software/ocm/cmds/ocm/commands/ocmcmds/common/addhdlrs/rscs"
+	"ocm.software/ocm/cmds/ocm/commands/ocmcmds/common/addhdlrs/srcs"
+	"ocm.software/ocm/cmds/ocm/commands/ocmcmds/common/inputs"
+	"ocm.software/ocm/cmds/ocm/common/options"
+	"ocm.software/ocm/cmds/ocm/common/utils"
 )
 
 const (
@@ -31,6 +31,8 @@ const (
 
 type ResourceSpecHandler struct {
 	rschandler *rscs.ResourceSpecHandler
+	srchandler *srcs.ResourceSpecHandler
+	refhandler *refs.ResourceSpecHandler
 	version    string
 	schema     string
 }
@@ -41,11 +43,26 @@ var (
 )
 
 func New(v string, schema string, opts ...ocm.ModificationOption) *ResourceSpecHandler {
-	return &ResourceSpecHandler{rschandler: rscs.New(opts...), version: v, schema: schema}
+	return &ResourceSpecHandler{
+		rschandler: rscs.New(opts...),
+		srchandler: srcs.New(),
+		refhandler: refs.New(),
+		version:    v,
+		schema:     schema,
+	}
 }
 
 func (h *ResourceSpecHandler) AddFlags(fs *pflag.FlagSet) {
 	h.rschandler.AddFlags(fs)
+	h.srchandler.AddFlags(fs)
+	h.refhandler.AddFlags(fs)
+}
+
+func (h *ResourceSpecHandler) WithCLIOptions(opts ...options.Options) *ResourceSpecHandler {
+	h.rschandler.WithCLIOptions(opts...)
+	h.srchandler.WithCLIOptions(opts...)
+	h.refhandler.WithCLIOptions(opts...)
+	return h
 }
 
 func (*ResourceSpecHandler) Key() string {
@@ -94,6 +111,13 @@ func (h *ResourceSpecHandler) Add(ctx clictx.Context, ictx inputs.Context, elem 
 
 	cd := cv.GetDescriptor()
 
+	opts := h.srchandler.GetOptions()[0].(*addhdlrs.Options)
+	if !opts.Replace {
+		cd.Resources = nil
+		cd.Sources = nil
+		cd.References = nil
+	}
+
 	schema := h.schema
 	if r.Meta.ConfiguredVersion != "" {
 		schema = r.Meta.ConfiguredVersion
@@ -111,7 +135,7 @@ func (h *ResourceSpecHandler) Add(ctx clictx.Context, ictx inputs.Context, elem 
 		cd.CreationTime = metav1.NewTimestampP()
 	}
 
-	err = handle(ctx, ictx, elem.Source(), cv, r.Sources, srcs.ResourceSpecHandler{})
+	err = handle(ctx, ictx, elem.Source(), cv, r.Sources, h.srchandler)
 	if err != nil {
 		return err
 	}
@@ -119,7 +143,7 @@ func (h *ResourceSpecHandler) Add(ctx clictx.Context, ictx inputs.Context, elem 
 	if err != nil {
 		return err
 	}
-	err = handle(ctx, ictx, elem.Source(), cv, r.References, refs.ResourceSpecHandler{})
+	err = handle(ctx, ictx, elem.Source(), cv, r.References, h.refhandler)
 	if err != nil {
 		return err
 	}

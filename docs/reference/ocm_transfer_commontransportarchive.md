@@ -2,19 +2,19 @@
 
 ### Synopsis
 
-```
+```bash
 ocm transfer commontransportarchive [<options>] <ctf> <target>
 ```
 
-##### Aliases
+#### Aliases
 
-```
+```text
 commontransportarchive, ctf
 ```
 
 ### Options
 
-```
+```text
   -L, --copy-local-resources        transfer referenced local resources by-value
   -V, --copy-resources              transfer referenced resources by-value
       --copy-sources                transfer referenced sources by-value
@@ -34,7 +34,6 @@ commontransportarchive, ctf
 
 ### Description
 
-
 Transfer content of a Common Transport Archive to the given target repository.
 
 
@@ -44,7 +43,7 @@ With the option <code>--recursive</code> the complete reference tree of a compon
 With the option <code>--no-update</code> existing versions in the target
 repository will not be touched at all. An additional specification of the
 option <code>--overwrite</code> is ignored. By default, updates of
-volative (non-signature-relevant) information is enabled, but the
+volatile (non-signature-relevant) information is enabled, but the
 modification of non-volatile data is prohibited unless the overwrite
 option is given.
 
@@ -68,7 +67,8 @@ references.
 
 
 The <code>--type</code> option accepts a file format for the
-target archive to use. The following formats are supported:
+target archive to use. It is only evaluated if the target
+archive does not exist yet. The following formats are supported:
 - directory
 - tar
 - tgz
@@ -134,6 +134,15 @@ The uploader name may be a path expression with the following possibilities:
     Alternatively, a single string value can be given representing an OCI repository
     reference.
 
+  - <code>ocm/mavenPackage</code>: uploading maven artifacts
+
+    The <code>ocm/mavenPackage</code> uploader is able to upload maven artifacts (whole GAV only!)
+    as artifact archive according to the maven artifact spec.
+    If registered the default mime type is: application/x-tgz
+
+    It accepts a plain string for the URL or a config with the following field:
+    'url': the URL of the maven repository.
+
   - <code>plugin</code>: [downloaders provided by plugins]
 
     sub namespace of the form <code>&lt;plugin name>/&lt;handler></code>
@@ -172,16 +181,15 @@ Only one of the fields <code>path</code> or <code>script</code> can be used.
 If no script option is given and the cli config defines a script <code>default</code>
 this one is used.
 
-
 ### Examples
 
-```
+```bash
 $ ocm transfer ctf ctf.tgz ghcr.io/mandelsoft/components
 ```
 
 ### SEE ALSO
 
-##### Parents
+#### Parents
 
 * [ocm transfer](ocm_transfer.md)	 &mdash; Transfer artifacts or components
 * [ocm](ocm.md)	 &mdash; Open Component Model command line client

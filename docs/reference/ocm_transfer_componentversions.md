@@ -2,19 +2,19 @@
 
 ### Synopsis
 
-```
+```bash
 ocm transfer componentversions [<options>] {<component-reference>} <target>
 ```
 
-##### Aliases
+#### Aliases
 
-```
+```text
 componentversions, componentversion, cv, components, component, comps, comp, c
 ```
 
 ### Options
 
-```
+```text
   -B, --bom-file string             file name to write the component version BOM
   -c, --constraints constraints     version constraint
   -L, --copy-local-resources        transfer referenced local resources by-value
@@ -38,7 +38,6 @@ componentversions, componentversion, cv, components, component, comps, comp, c
 ```
 
 ### Description
-
 
 Transfer all component versions specified to the given target repository.
 If only a component (instead of a component version) is specified all versions
@@ -96,7 +95,8 @@ OCI Repository types (using standard component repository to OCI mapping):
 
 
 The <code>--type</code> option accepts a file format for the
-target archive to use. The following formats are supported:
+target archive to use. It is only evaluated if the target
+archive does not exist yet. The following formats are supported:
 - directory
 - tar
 - tgz
@@ -128,7 +128,7 @@ versions are re-transported).
 With the option <code>--no-update</code> existing versions in the target
 repository will not be touched at all. An additional specification of the
 option <code>--overwrite</code> is ignored. By default, updates of
-volative (non-signature-relevant) information is enabled, but the
+volatile (non-signature-relevant) information is enabled, but the
 modification of non-volatile data is prohibited unless the overwrite
 option is given.
 
@@ -191,6 +191,15 @@ The uploader name may be a path expression with the following possibilities:
     Alternatively, a single string value can be given representing an OCI repository
     reference.
 
+  - <code>ocm/mavenPackage</code>: uploading maven artifacts
+
+    The <code>ocm/mavenPackage</code> uploader is able to upload maven artifacts (whole GAV only!)
+    as artifact archive according to the maven artifact spec.
+    If registered the default mime type is: application/x-tgz
+
+    It accepts a plain string for the URL or a config with the following field:
+    'url': the URL of the maven repository.
+
   - <code>plugin</code>: [downloaders provided by plugins]
 
     sub namespace of the form <code>&lt;plugin name>/&lt;handler></code>
@@ -229,17 +238,16 @@ Only one of the fields <code>path</code> or <code>script</code> can be used.
 If no script option is given and the cli config defines a script <code>default</code>
 this one is used.
 
-
 ### Examples
 
-```
+```bash
 $ ocm transfer components -t tgz ghcr.io/mandelsoft/kubelink ctf.tgz
 $ ocm transfer components -t tgz --repo OCIRegistry::ghcr.io mandelsoft/kubelink ctf.tgz
 ```
 
 ### SEE ALSO
 
-##### Parents
+#### Parents
 
 * [ocm transfer](ocm_transfer.md)	 &mdash; Transfer artifacts or components
 * [ocm](ocm.md)	 &mdash; Open Component Model command line client

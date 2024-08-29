@@ -4,19 +4,18 @@ import (
 	"fmt"
 
 	"github.com/mandelsoft/goutils/errors"
-	"github.com/spf13/pflag"
 	"k8s.io/apimachinery/pkg/util/validation/field"
 
-	"github.com/open-component-model/ocm/cmds/ocm/commands/ocmcmds/common"
-	"github.com/open-component-model/ocm/cmds/ocm/commands/ocmcmds/common/addhdlrs"
-	"github.com/open-component-model/ocm/cmds/ocm/commands/ocmcmds/common/options/skipdigestoption"
-	"github.com/open-component-model/ocm/cmds/ocm/pkg/options"
-	"github.com/open-component-model/ocm/pkg/contexts/clictx"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm/compdesc"
-	metav1 "github.com/open-component-model/ocm/pkg/contexts/ocm/compdesc/meta/v1"
-	compdescv2 "github.com/open-component-model/ocm/pkg/contexts/ocm/compdesc/versions/v2"
-	"github.com/open-component-model/ocm/pkg/runtime"
+	clictx "ocm.software/ocm/api/cli"
+	"ocm.software/ocm/api/ocm"
+	"ocm.software/ocm/api/ocm/compdesc"
+	metav1 "ocm.software/ocm/api/ocm/compdesc/meta/v1"
+	compdescv2 "ocm.software/ocm/api/ocm/compdesc/versions/v2"
+	"ocm.software/ocm/api/utils/runtime"
+	"ocm.software/ocm/cmds/ocm/commands/ocmcmds/common"
+	"ocm.software/ocm/cmds/ocm/commands/ocmcmds/common/addhdlrs"
+	"ocm.software/ocm/cmds/ocm/commands/ocmcmds/common/options/skipdigestoption"
+	"ocm.software/ocm/cmds/ocm/common/options"
 )
 
 const (
@@ -24,8 +23,8 @@ const (
 )
 
 type ResourceSpecHandler struct {
-	options options.OptionSet
-	opts    *ocm.ModificationOptions
+	addhdlrs.ResourceSpecHandlerBase
+	opts *ocm.ModificationOptions
 }
 
 var (
@@ -34,21 +33,22 @@ var (
 )
 
 func New(opts ...ocm.ModificationOption) *ResourceSpecHandler {
+	h := &ResourceSpecHandler{ResourceSpecHandlerBase: addhdlrs.NewBase(options.OptionSet{skipdigestoption.New()})}
 	if len(opts) > 0 {
-		return &ResourceSpecHandler{opts: ocm.NewModificationOptions(opts...)}
+		h.opts = ocm.NewModificationOptions(opts...)
 	}
-	return &ResourceSpecHandler{}
+	return h
 }
 
-func (h *ResourceSpecHandler) AddFlags(opts *pflag.FlagSet) {
-	if len(h.options) == 0 {
-		h.options = options.OptionSet{skipdigestoption.New()}
+func (h *ResourceSpecHandler) WithCLIOptions(opts ...options.Options) *ResourceSpecHandler {
+	return &ResourceSpecHandler{
+		h.ResourceSpecHandlerBase.WithCLIOptions(opts...),
+		h.opts,
 	}
-	h.options.AddFlags(opts)
 }
 
 func (h *ResourceSpecHandler) getModOpts() []ocm.ModificationOption {
-	opts := options.FindOptions[ocm.ModificationOption](h.options)
+	opts := options.FindOptions[ocm.ModificationOption](h.GetOptions())
 	if h.opts != nil {
 		opts = append(opts, h.opts)
 	}
@@ -129,6 +129,10 @@ type ResourceSpec struct {
 }
 
 var _ addhdlrs.ElementSpec = (*ResourceSpec)(nil)
+
+func (r *ResourceSpec) GetType() string {
+	return r.Type
+}
 
 func (r *ResourceSpec) GetRawIdentity() metav1.Identity {
 	return r.ElementMeta.GetRawIdentity()

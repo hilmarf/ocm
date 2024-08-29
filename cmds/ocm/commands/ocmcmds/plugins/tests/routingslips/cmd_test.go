@@ -3,27 +3,30 @@ package routingslips_test
 import (
 	"bytes"
 
+	. "github.com/mandelsoft/goutils/testutils"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-	. "github.com/open-component-model/ocm/cmds/ocm/testhelper"
-	. "github.com/open-component-model/ocm/pkg/testutils"
+	. "ocm.software/ocm/api/ocm/plugin/testutils"
+	. "ocm.software/ocm/cmds/ocm/testhelper"
 
-	"github.com/open-component-model/ocm/pkg/common/accessio"
-	"github.com/open-component-model/ocm/pkg/common/accessobj"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm/attrs/plugincacheattr"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm/attrs/plugindirattr"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm/labels/routingslip"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm/registration"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm/repositories/ctf"
+	"ocm.software/ocm/api/ocm/extensions/attrs/plugincacheattr"
+	"ocm.software/ocm/api/ocm/extensions/labels/routingslip"
+	"ocm.software/ocm/api/ocm/extensions/repositories/ctf"
+	"ocm.software/ocm/api/ocm/plugin/registration"
+	"ocm.software/ocm/api/utils/accessio"
+	"ocm.software/ocm/api/utils/accessobj"
 )
 
-const ARCH = "/tmp/ca"
-const VERSION = "v1"
-const COMP = "test.de/x"
-const PROVIDER = "acme.org"
+const (
+	ARCH     = "/tmp/ca"
+	VERSION  = "v1"
+	COMP     = "test.de/x"
+	PROVIDER = "acme.org"
+)
 
 var _ = Describe("Test Environment", func() {
 	var env *TestEnv
+	var plugins TempPluginDir
 
 	BeforeEach(func() {
 		env = NewTestEnv()
@@ -37,7 +40,8 @@ var _ = Describe("Test Environment", func() {
 		env.RSAKeyPair(PROVIDER)
 
 		ctx := env.OCMContext()
-		plugindirattr.Set(ctx, "testdata")
+		plugins = Must(ConfigureTestPlugins(env, "testdata"))
+
 		registry := plugincacheattr.Get(ctx)
 		Expect(registration.RegisterExtensions(ctx)).To(Succeed())
 		p := registry.Get("test")
@@ -45,6 +49,7 @@ var _ = Describe("Test Environment", func() {
 	})
 
 	AfterEach(func() {
+		plugins.Cleanup()
 		env.Cleanup()
 	})
 

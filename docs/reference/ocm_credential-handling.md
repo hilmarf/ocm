@@ -2,10 +2,9 @@
 
 ### Description
 
-
 In contrast to libraries intended for a dedicated technical environment,
 for example the handling of OCI images in OCI registries, the OCM
-ecosystem cannot provide a specialized credential management for a decicated
+ecosystem cannot provide a specialized credential management for a dedicated
 environment.
 
 Because of its extensibility working with component versions could
@@ -34,7 +33,7 @@ The used credential management model is based on four elements:
   access, which must be authorized.
 
   This is again achieved by a set of simple named attributes. There is only
-  one defined property, which must always be present, the <code>type</code> attibute.
+  one defined property, which must always be present, the <code>type</code> attribute.
   It denotes the type of the technical environment credentials are required for.
   For example, for accessing OCI or Git registries. Additionally, there may
   be any number of arbitrary attributes used to describe the concrete
@@ -61,10 +60,10 @@ The used credential management model is based on four elements:
   The credential management must resolve credential requests against a set
   of credential assignments. This is not necessarily a complete attribute match
   for the involved consumer ids. There is typically some kind of matching
-  involved. For example, an assigment is done for an OCI registry with a dedicated
+  involved. For example, an assignment is done for an OCI registry with a dedicated
   server url and prefix for the repository path (type is OCIRegistry, host is
-  ghcr.io, prefixpath is open-component-model). The assigned credentials
-  should be applicable for sub repositories. Som the assignment use a more
+  ghcr.io, prefix path is open-component-model). The assigned credentials
+  should be applicable for sub repositories. So the assignment uses a more
   general consumer id than the concrete credential request (for example for
   repository path <code>open-component-model/ocm/ocmcli</code>)
 
@@ -111,13 +110,18 @@ The following credential consumer types are used/supported:
       - <code>key</code>: secret key use to access the credential server
 
 
-  - <code>Github</code>: GitHub credential matcher
+  - <code>Github</code>: Redis PubSub credential matcher
 
-    This matcher is a hostpath matcher.
+    This matcher is a hostpath matcher with additional attributes:
+
+    - *<code>channel</code>* (required if set in pattern): the channel name
+    - *<code>database</code>* the database number
+
 
     Credential consumers of the consumer type Github evaluate the following credential properties:
 
-      - <code>token</code>: GitHub personal access token
+      - <code>username</code>: Redis username
+      - <code>password</code>: Redis password
 
 
   - <code>HashiCorpVault</code>: HashiCorp Vault credential matcher
@@ -128,7 +132,7 @@ The following credential consumer types are used/supported:
       - <code>scheme</code>: (optional) URL scheme
       - <code>port</code>: (optional) server port
       - <code>namespace</code>: vault namespace
-      - <code>secretEngine</code>: secret engine
+      - <code>mountPath</code>: mount path
       - <code>pathprefix</code>: path prefix for secret
 
 
@@ -136,9 +140,8 @@ The following credential consumer types are used/supported:
 
       - <code>authmeth</code>: auth method
       - <code>token</code>: vault token
-      - <code>roleid</code>: applrole role id
-      - <code>secretid</code>: applrole secret id
-      - <code>secretid</code>: applrole secret id
+      - <code>roleid</code>: app-role role id
+      - <code>secretid</code>: app-role secret id
 
     The only supported auth methods, so far, are <code>token</code> and <code>approle</code>.
 
@@ -157,6 +160,30 @@ The following credential consumer types are used/supported:
       - <code>certificateAuthority</code>: TLS certificate authority
 
 
+  - <code>MavenRepository</code>: MVN repository
+
+    It matches the <code>MavenRepository</code> consumer type and additionally acts like
+    the <code>hostpath</code> type.
+
+    Credential consumers of the consumer type MavenRepository evaluate the following credential properties:
+
+      - <code>username</code>: the basic auth user name
+      - <code>password</code>: the basic auth password
+
+
+  - <code>NpmRegistry</code>: NPM registry
+
+    It matches the <code>NpmRegistry</code> consumer type and additionally acts like
+    the <code>hostpath</code> type.
+
+    Credential consumers of the consumer type NpmRegistry evaluate the following credential properties:
+
+      - <code>username</code>: the basic auth user name
+      - <code>password</code>: the basic auth password
+      - <code>email</code>: NPM registry, require an email address
+      - <code>token</code>: the token attribute. May exist after login at any npm registry. Check your .npmrc file!
+
+
   - <code>OCIRegistry</code>: OCI registry credential matcher
 
     It matches the <code>OCIRegistry</code> consumer type and additionally acts like
@@ -164,23 +191,10 @@ The following credential consumer types are used/supported:
 
     Credential consumers of the consumer type OCIRegistry evaluate the following credential properties:
 
-      - <code>username</code>: the basic auth user name
+      - <code>username</code>: the basic auth username
       - <code>password</code>: the basic auth password
       - <code>identityToken</code>: the bearer token used for non-basic auth authorization
       - <code>certificateAuthority</code>: the certificate authority certificate used to verify certificates
-
-
-  - <code>Registry.npmjs.com</code>: NPM repository
-
-    It matches the <code>Registry.npmjs.com</code> consumer type and additionally acts like
-    the <code>hostpath</code> type.
-
-    Credential consumers of the consumer type Registry.npmjs.com evaluate the following credential properties:
-
-      - <code>username</code>: the basic auth user name
-      - <code>password</code>: the basic auth password
-      - <code>email</code>: NPM registry, require an email address
-      - <code>token</code>: the token attribute. May exist after login at any npm registry. Check your .npmrc file!
 
 
   - <code>S3</code>: S3 credential matcher
@@ -229,7 +243,7 @@ The following credential consumer types are used/supported:
 \
 Those consumer types provide their own matchers, which are often based
 on some standard generic matches. Those generic matchers and their
-behaviours are described in the following list:
+behaviors are described in the following list:
   - <code>exact</code>: exact match of given pattern set
   - <code>hostpath</code>: Host and path based credential matcher
 
@@ -248,7 +262,7 @@ behaviours are described in the following list:
 
 ### Credential Providers
 
-Credential providers offer sets of named credentials from variuos sources,
+Credential providers offer sets of named credentials from various sources,
 which might be directly mapped to consumer identities (if supported
 by the provider type).
 
@@ -315,7 +329,7 @@ The following types are currently available:
     - <code>scheme</code>: (optional) URL scheme
     - <code>port</code>: (optional) server port
     - <code>namespace</code>: vault namespace
-    - <code>secretEngine</code>: secret engine
+    - <code>mountPath</code>: mount path
     - <code>pathprefix</code>: path prefix for secret
 
 
@@ -323,9 +337,8 @@ The following types are currently available:
 
     - <code>authmeth</code>: auth method
     - <code>token</code>: vault token
-    - <code>roleid</code>: applrole role id
-    - <code>secretid</code>: applrole secret id
-    - <code>secretid</code>: applrole secret id
+    - <code>roleid</code>: app-role role id
+    - <code>secretid</code>: app-role secret id
 
   The only supported auth methods, so far, are <code>token</code> and <code>approle</code>.
 
@@ -335,7 +348,7 @@ The following types are currently available:
     The repository specification supports the following fields:
       - <code>serverURL</code>: *string* (required): the URL of the vault instance
       - <code>namespace</code>: *string* (optional): the namespace used to evaluate secrets
-      - <code>secretsEngine</code>: *string* (optional): the secrets engine to use (default: secrets)
+      - <code>mountPath</code>: *string* (optional): the mount path to use (default: secrets)
       - <code>path</code>: *string* (optional): the path prefix used to lookup secrets
       - <code>secrets</code>: *[]string* (optional): list of secrets
       - <code>propagateConsumerIdentity</code>: *bool*(optional): evaluate metadata for consumer id propagation
@@ -359,10 +372,9 @@ The following types are currently available:
       - <code>propagateConsumerIdentity</code>: *bool*(optional): enable consumer id propagation
 
 
-
 ### SEE ALSO
 
-##### Parents
+#### Parents
 
 * [ocm](ocm.md)	 &mdash; Open Component Model command line client
 

@@ -3,21 +3,23 @@ package download_test
 import (
 	"bytes"
 
+	. "github.com/mandelsoft/goutils/testutils"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-	. "github.com/open-component-model/ocm/cmds/ocm/testhelper"
-	. "github.com/open-component-model/ocm/pkg/testutils"
+	. "ocm.software/ocm/cmds/ocm/testhelper"
 
-	"github.com/open-component-model/ocm/pkg/common/accessio"
-	"github.com/open-component-model/ocm/pkg/contexts/oci/grammar"
-	"github.com/open-component-model/ocm/pkg/contexts/oci/repositories/artifactset"
-	"github.com/open-component-model/ocm/pkg/mime"
+	"ocm.software/ocm/api/oci/extensions/repositories/artifactset"
+	"ocm.software/ocm/api/oci/grammar"
+	"ocm.software/ocm/api/utils/accessio"
+	"ocm.software/ocm/api/utils/mime"
 )
 
-const ARCH = "/tmp/ctf"
-const VERSION = "v1"
-const NS = "mandelsoft/test"
-const OUT = "/tmp/res"
+const (
+	ARCH    = "/tmp/ctf"
+	VERSION = "v1"
+	NS      = "mandelsoft/test"
+	OUT     = "/tmp/res"
+)
 
 var _ = Describe("Test Environment", func() {
 	var env *TestEnv

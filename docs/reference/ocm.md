@@ -2,13 +2,13 @@
 
 ### Synopsis
 
-```
+```bash
 ocm [<options>] <sub command> ...
 ```
 
 ### Options
 
-```
+```text
   -X, --attribute stringArray     attribute setting
       --ca-cert stringArray       additional root certificate authorities (for signing certificates)
       --config stringArray        configuration file
@@ -16,6 +16,7 @@ ocm [<options>] <sub command> ...
   -C, --cred stringArray          credential setting
   -h, --help                      help for ocm
   -I, --issuer stringArray        issuer name or distinguished name (DN) (optionally for dedicated signature) ([<name>:=]<dn>
+      --logJson                   log as json instead of human readable logs
       --logconfig string          log config
   -L, --logfile string            set log file
       --logkeys stringArray       log tags/realms(with leading /) to be enabled ([/[+]]name{,[/[+]]name}[=level])
@@ -27,7 +28,6 @@ ocm [<options>] <sub command> ...
 ```
 
 ### Description
-
 
 The Open Component Model command line client supports the work with OCM
 artifacts, like Component Archives, Common Transport Archive,
@@ -59,7 +59,7 @@ The following configuration sources are used:
 
 
 With the option <code>--cred</code> it is possible to specify arbitrary credentials
-for various environments on the command line. Nevertheless it is always preferrable
+for various environments on the command line. Nevertheless it is always preferable
 to use the cli config file.
 Every credential setting is related to a dedicated consumer and provides a set of
 credential attributes. All this can be specified by a sequence of <code>--cred</code>
@@ -117,7 +117,7 @@ an <code>@</code>, the logging configuration is taken from a file.
 
 The value can be a simple type or a JSON/YAML string for complex values
 (see [ocm attributes](ocm_attributes.md). The following attributes are supported:
-- <code>github.com/mandelsoft/logforward</code>: *logconfig* Logging config structure used for config forwarding
+- <code>github.com/mandelsoft/logforward</code> [<code>logfwd</code>]: *logconfig* Logging config structure used for config forwarding
 
   This attribute is used to specify a logging configuration intended
   to be forwarded to other tools.
@@ -240,7 +240,7 @@ The value can be a simple type or a JSON/YAML string for complex values
 
   Directory to look for OCM plugin executables.
 
-- <code>github.com/mandelsoft/ocm/rootcerts</code>: *JSON*
+- <code>github.com/mandelsoft/ocm/rootcerts</code> [<code>rootcerts</code>]: *JSON*
 
   General root certificate settings given as JSON document with the following
   format:
@@ -288,15 +288,19 @@ The value can be a simple type or a JSON/YAML string for complex values
 
 - <code>github.com/mandelsoft/tempblobcache</code> [<code>blobcache</code>]: *string* Foldername for temporary blob cache
 
-  The temporary blob cache is used to accessing large blobs from remote sytems.
+  The temporary blob cache is used to accessing large blobs from remote systems.
   The are temporarily stored in the filesystem, instead of the memory, to avoid
   blowing up the memory consumption.
+
+- <code>ocm.software/cliconfig</code> [<code>cliconfig</code>]: *cliconfig* Configuration Object passed to command line plugin.
+
+
 
 - <code>ocm.software/compositionmode</code> [<code>compositionmode</code>]: *bool* (default: false
 
   Composition mode decouples a component version provided by a repository
-  implemention from the backened persistence. Added local blobs will
-  and other changes witll not be forwarded to the backend repository until
+  implementation from the backend persistence. Added local blobs will
+  and other changes will not be forwarded to the backend repository until
   an AddVersion is called on the component.
   If composition mode is disabled blobs will directly be forwarded to
   the backend and descriptor updated will be persisted on AddVersion
@@ -348,7 +352,6 @@ With <code>--ca-cert</code> it is possible to define additional root
 certificates for signature verification, if public keys are provided
 by a certificate delivered with the signature.
 
-
 ### SEE ALSO
 
 
@@ -368,6 +371,7 @@ by a certificate delivered with the signature.
 * [ocm <b>hash</b>](ocm_hash.md)	 &mdash; Hash and normalization operations
 * [ocm <b>install</b>](ocm_install.md)	 &mdash; Install elements.
 * [ocm <b>list</b>](ocm_list.md)	 &mdash; List information about components
+* [ocm <b>set</b>](ocm_set.md)	 &mdash; Set information about OCM repositories
 * [ocm <b>show</b>](ocm_show.md)	 &mdash; Show tags or versions
 * [ocm <b>sign</b>](ocm_sign.md)	 &mdash; Sign components or hashes
 * [ocm <b>transfer</b>](ocm_transfer.md)	 &mdash; Transfer artifacts or components
@@ -395,6 +399,7 @@ by a certificate delivered with the signature.
 * [ocm <b>ocm-accessmethods</b>](ocm_ocm-accessmethods.md)	 &mdash; List of all supported access methods
 * [ocm <b>ocm-downloadhandlers</b>](ocm_ocm-downloadhandlers.md)	 &mdash; List of all available download handlers
 * [ocm <b>ocm-labels</b>](ocm_ocm-labels.md)	 &mdash; Labels and Label Merging
+* [ocm <b>ocm-pubsub</b>](ocm_ocm-pubsub.md)	 &mdash; List of all supported publish/subscribe implementations
 * [ocm <b>ocm-references</b>](ocm_ocm-references.md)	 &mdash; notation for OCM references
 * [ocm <b>ocm-uploadhandlers</b>](ocm_ocm-uploadhandlers.md)	 &mdash; List of all available upload handlers
 * [ocm <b>toi-bootstrapping</b>](ocm_toi-bootstrapping.md)	 &mdash; Tiny OCM Installer based on component versions

@@ -3,10 +3,12 @@ package sign_test
 import (
 	"bytes"
 
+	. "github.com/mandelsoft/goutils/testutils"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-	. "github.com/open-component-model/ocm/cmds/ocm/testhelper"
-	. "github.com/open-component-model/ocm/pkg/testutils"
+	. "ocm.software/ocm/cmds/ocm/testhelper"
+
+	"ocm.software/ocm/api/ocm/tools/signing/signingtest"
 )
 
 const ISSUER = "mandelsoft"
@@ -15,7 +17,7 @@ var _ = Describe("Test Environment", func() {
 	var env *TestEnv
 
 	BeforeEach(func() {
-		env = NewTestEnv(TestData("../../../../../../pkg/contexts/ocm/signing/testdata"))
+		env = NewTestEnv(signingtest.TestData())
 	})
 
 	AfterEach(func() {

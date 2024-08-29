@@ -2,19 +2,19 @@
 
 ### Synopsis
 
-```
+```bash
 ocm download artifacts [<options>]  {<artifact>}
 ```
 
-##### Aliases
+#### Aliases
 
-```
+```text
 artifacts, artifact, art, a
 ```
 
 ### Options
 
-```
+```text
       --dirtree          extract as effective filesystem content
   -h, --help             help for artifacts
       --layers ints      extract dedicated layers
@@ -24,7 +24,6 @@ artifacts, artifact, art, a
 ```
 
 ### Description
-
 
 Download artifacts from an OCI registry. The result is stored in
 artifact set format, without the repository part
@@ -74,17 +73,17 @@ filesystem content.
 
 
 The <code>--type</code> option accepts a file format for the
-target archive to use. The following formats are supported:
+target archive to use. It is only evaluated if the target
+archive does not exist yet. The following formats are supported:
 - directory
 - tar
 - tgz
 
 The default format is <code>directory</code>.
 
-
 ### SEE ALSO
 
-##### Parents
+#### Parents
 
 * [ocm download](ocm_download.md)	 &mdash; Download oci artifacts, resources or complete components
 * [ocm](ocm.md)	 &mdash; Open Component Model command line client

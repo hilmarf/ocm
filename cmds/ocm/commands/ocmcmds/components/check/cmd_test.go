@@ -3,24 +3,26 @@ package check_test
 import (
 	"bytes"
 
+	. "github.com/mandelsoft/goutils/testutils"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-	. "github.com/open-component-model/ocm/cmds/ocm/testhelper"
-	. "github.com/open-component-model/ocm/pkg/testutils"
+	. "ocm.software/ocm/cmds/ocm/testhelper"
 
-	"github.com/open-component-model/ocm/pkg/common/accessio"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm/accessmethods/ociartifact"
-	v1 "github.com/open-component-model/ocm/pkg/contexts/ocm/compdesc/meta/v1"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm/resourcetypes"
+	"ocm.software/ocm/api/ocm"
+	v1 "ocm.software/ocm/api/ocm/compdesc/meta/v1"
+	"ocm.software/ocm/api/ocm/extensions/accessmethods/ociartifact"
+	resourcetypes "ocm.software/ocm/api/ocm/extensions/artifacttypes"
+	"ocm.software/ocm/api/utils/accessio"
 )
 
-const ARCH = "/tmp/ca"
-const VERSION = "v1"
-const COMP = "test.de/x"
-const COMP2 = "test.de/y"
-const COMP3 = "test.de/z"
-const COMP4 = "test.de/a"
+const (
+	ARCH    = "/tmp/ca"
+	VERSION = "v1"
+	COMP    = "test.de/x"
+	COMP2   = "test.de/y"
+	COMP3   = "test.de/z"
+	COMP4   = "test.de/a"
+)
 
 var _ = Describe("Test Environment", func() {
 	var env *TestEnv

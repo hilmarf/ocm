@@ -2,19 +2,19 @@
 
 ### Synopsis
 
-```
+```bash
 ocm bootstrap configuration [<options>] {<component-reference>} {<resource id field>}
 ```
 
-##### Aliases
+#### Aliases
 
-```
+```text
 configuration, config, cfg
 ```
 
 ### Options
 
-```
+```text
   -c, --credentials string   credentials file name (default "TOICredentials")
   -h, --help                 help for configuration
       --lookup stringArray   repository name or spec for closure lookup fallback
@@ -23,7 +23,6 @@ configuration, config, cfg
 ```
 
 ### Description
-
 
 If a TOI package provides information for configuration file templates/prototypes
 this command extracts this data and provides appropriate files in the filesystem.
@@ -40,7 +39,7 @@ If no credentials file name is provided (option -c) the file
 <code>TOICredentials</code> is used. If no parameter file name is
 provided (option -p) the file <code>TOIParameters</code> is used.
 
-For more details about those files see [ ocm bootstrap package](_ocm_bootstrap_package.md).
+For more details about those files see [ocm bootstrap package](ocm_bootstrap_package.md).
 
 
 If the <code>--repo</code> option is specified, the given names are interpreted
@@ -95,16 +94,15 @@ it only contains a single component version. Therefore, in this scenario
 this option must always be specified to be able to follow component
 references.
 
-
 ### Examples
 
-```
+```bash
 $ ocm toi bootstrap config ghcr.io/mandelsoft/ocm//ocmdemoinstaller:0.0.1-dev
 ```
 
 ### SEE ALSO
 
-##### Parents
+#### Parents
 
 * [ocm bootstrap](ocm_bootstrap.md)	 &mdash; bootstrap components
 * [ocm](ocm.md)	 &mdash; Open Component Model command line client
@@ -113,11 +111,10 @@ $ ocm toi bootstrap config ghcr.io/mandelsoft/ocm//ocmdemoinstaller:0.0.1-dev
 
 ##### Additional Help Topics
 
-* [ocm bootstrap configuration <b>toi-bootstrapping</b>](ocm_bootstrap_configuration_toi-bootstrapping.md)	 &mdash; Tiny OCM Installer based on component versions
+* [ocm <b>toi-bootstrapping</b>](ocm_toi-bootstrapping.md)	 &mdash; Tiny OCM Installer based on component versions
 
 
 ##### Additional Links
 
-* [<b>ocm toi-bootstrapping</b>](ocm_toi-bootstrapping.md)	 &mdash; Tiny OCM Installer based on component versions
-* [<b> ocm bootstrap package</b>](_ocm_bootstrap_package.md)
+* [<b>ocm bootstrap package</b>](ocm_bootstrap_package.md)	 &mdash; bootstrap component version
 

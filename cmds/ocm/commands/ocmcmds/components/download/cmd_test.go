@@ -3,27 +3,29 @@ package download_test
 import (
 	"bytes"
 
+	. "github.com/mandelsoft/goutils/testutils"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-	. "github.com/open-component-model/ocm/cmds/ocm/testhelper"
-	. "github.com/open-component-model/ocm/pkg/contexts/ocm/testhelper"
-	. "github.com/open-component-model/ocm/pkg/testutils"
+	. "ocm.software/ocm/api/ocm/testhelper"
+	. "ocm.software/ocm/cmds/ocm/testhelper"
 
 	"github.com/mandelsoft/vfs/pkg/vfs"
 
-	"github.com/open-component-model/ocm/pkg/common/accessio"
-	metav1 "github.com/open-component-model/ocm/pkg/contexts/ocm/compdesc/meta/v1"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm/grammar"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm/repositories/comparch"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm/resourcetypes"
-	"github.com/open-component-model/ocm/pkg/mime"
+	metav1 "ocm.software/ocm/api/ocm/compdesc/meta/v1"
+	resourcetypes "ocm.software/ocm/api/ocm/extensions/artifacttypes"
+	"ocm.software/ocm/api/ocm/extensions/repositories/comparch"
+	"ocm.software/ocm/api/ocm/grammar"
+	"ocm.software/ocm/api/utils/accessio"
+	"ocm.software/ocm/api/utils/mime"
 )
 
-const ARCH = "/tmp/ctf"
-const PROVIDER = "mandelsoft"
-const VERSION = "v1"
-const COMPONENT = "github.com/mandelsoft/test"
-const OUT = "/tmp/res"
+const (
+	ARCH      = "/tmp/ctf"
+	PROVIDER  = "mandelsoft"
+	VERSION   = "v1"
+	COMPONENT = "github.com/mandelsoft/test"
+	OUT       = "/tmp/res"
+)
 
 var _ = Describe("Download Component Version", func() {
 	var env *TestEnv

@@ -6,13 +6,14 @@ import (
 	"strings"
 
 	"github.com/mandelsoft/goutils/errors"
-	"github.com/open-component-model/ocm/examples/lib/helper"
-	ociidentity "github.com/open-component-model/ocm/pkg/contexts/credentials/builtin/oci/identity"
-	"github.com/open-component-model/ocm/pkg/contexts/oci"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm/attrs/signingattr"
-	"github.com/open-component-model/ocm/pkg/contexts/ocm/repositories/ocireg"
-	"github.com/open-component-model/ocm/pkg/signing/handlers/rsa"
+
+	ociidentity "ocm.software/ocm/api/credentials/builtin/oci/identity"
+	"ocm.software/ocm/api/oci"
+	"ocm.software/ocm/api/ocm"
+	"ocm.software/ocm/api/ocm/extensions/attrs/signingattr"
+	"ocm.software/ocm/api/ocm/extensions/repositories/ocireg"
+	"ocm.software/ocm/api/tech/signing/handlers/rsa"
+	"ocm.software/ocm/examples/lib/helper"
 )
 
 const KEYFILE = "/tmp/comparison.pub"
@@ -33,7 +34,7 @@ func Write(cfg *helper.Config) error {
 
 	fmt.Printf("persisting public key to %s", KEYFILE)
 	pubkey := signingattr.Get(ctx).GetPublicKey("acme.org")
-	file, err := os.OpenFile(KEYFILE, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0600)
+	file, err := os.OpenFile(KEYFILE, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0o600)
 	if err != nil {
 		return errors.Wrapf(err, "cannot persist public key")
 	}
