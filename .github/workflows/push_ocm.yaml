@@ -56,8 +56,8 @@ jobs:
       env:
         GITHUBORG: ${{ github.repository_owner }}
         GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
-        GORELEASER_CURRENT_TAG: ocm-cli/latest
-        GORELEASER_PREVIOUS_TAG: ocm-cli/latest
+        GORELEASER_CURRENT_TAG: v0.0.0
+        GORELEASER_PREVIOUS_TAG: v0.0.0
     - name: remove some files
       run: |
         rm -rf dist/*.json dist/*.yaml
