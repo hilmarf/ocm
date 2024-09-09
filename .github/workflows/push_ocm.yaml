@@ -55,4 +55,19 @@ jobs:
         token: ${{ steps.generate_token.outputs.token }}
     - name: Update release assets
       run: |
-        gh api -X PATCH -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" /repos/hilmarf/ocm/releases/assets/189300480 -f "name=dist/ocm-latest-linux-amd64.tar.gz"
+        RELEASE_ID=$(gh api -X GET -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" /repos/hilmarf/ocm/releases/tags/v0.9.0 | jq -r .id)
+        gh api -X DELETE -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" /repos/hilmarf/ocm/releases/$RELEASE_ID
+        #gh api -X PATCH -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" /repos/hilmarf/ocm/releases/assets/189300480 -f "name=dist/ocm-latest-linux-amd64.tar.gz"
+    - name: Create Release
+      id: create_release
+      uses: Hs1r1us/Release-AIO@v2.0.0
+      env:
+        GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
+      with:
+        tag_name: v0.9.0
+        release_name: latest
+        asset_files: ./dist/
+        body: |
+          holds always the latest ocm-cli binaries
+        draft: false
+        prerelease: true
