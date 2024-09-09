@@ -41,6 +41,7 @@ jobs:
         token: ${{ steps.generate_token.outputs.token }}
     - name: delete release and move tag
       run: |
+        set -x
         LATEST_EXISTS=$(gh api -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" /repos/hilmarf/ocm/releases | grep -c 'ocm-cli/latest')
         echo "works 1"
         if [ "$LATEST_EXISTS" -ge 1 ]; then
