@@ -44,7 +44,7 @@ jobs:
       with:
         distribution: goreleaser
         version: 2.2.0
-        args: release --clean --timeout 60m --skip=validate --config=.github/config/latest.yml
+        args: release --clean --timeout 60m --snapshot --verbose --skip=validate --config=.github/config/latest.yml
       env:
         GITHUBORG: ${{ github.repository_owner }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
