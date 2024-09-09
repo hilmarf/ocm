@@ -41,7 +41,7 @@ jobs:
         token: ${{ steps.generate_token.outputs.token }}
     - name: Update release assets
       run: |
-        gh api -X PATCH -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" /repos/hilmarf/ocm/git/refs/tags/ocm-cli/latest -f "sha=${{ steps.checkout.outputs.commit }}" -F "force=true"   
+        gh api -X PATCH -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" /repos/hilmarf/ocm/git/refs/tags/ocm-cli/latest -f "sha=${{ github.sha }}" -F "force=true"   
     - name: Setup Go
       uses: actions/setup-go@v5
       with:
