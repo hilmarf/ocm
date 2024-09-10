@@ -21,7 +21,7 @@ $defs:
       creationTime:
         type: string
         format: date-time
-
+ 
   merge:
     type: 'object'
     properties:
