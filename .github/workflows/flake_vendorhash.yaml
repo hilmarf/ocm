@@ -51,6 +51,7 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v7
         with:
+          token: ${{ steps.generate_token.outputs.token }}
           title: "chore: update 'flake.nix'"
           commit-message: "[github-actions] auto update vendor hash"
           branch: nix/flake
