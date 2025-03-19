@@ -9,11 +9,13 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"maps"
 	"math/big"
 	"math/rand"
 	"net/http"
 	"os"
 	"reflect"
+	"slices"
 	"sort"
 	"strings"
 	"time"
@@ -21,8 +23,6 @@ import (
 	"github.com/mandelsoft/vfs/pkg/vfs"
 	"github.com/modern-go/reflect2"
 	"github.com/spf13/cobra"
-	"golang.org/x/exp/maps"
-	"golang.org/x/exp/slices"
 	"sigs.k8s.io/yaml"
 
 	ocmlog "ocm.software/ocm/api/utils/logging"
@@ -114,7 +114,7 @@ func RandomString(n int) string {
 		} else {
 			// insecure fallback to provide a valid result
 			ocmlog.Logger().Error("failed to generate random number", "error", err.Error())
-			value = rand.Intn(len(chars)) //nolint: gosec // only used as fallback
+			value = rand.Intn(len(chars)) //nolint:gosec // only used as fallback
 		}
 		b[i] = chars[value]
 	}
@@ -241,7 +241,7 @@ func StringMapKeys[K ~string, E any](m map[K]E) []K {
 	if m == nil {
 		return nil
 	}
-	keys := maps.Keys(m)
+	keys := slices.Collect(maps.Keys(m))
 	slices.Sort(keys)
 	return keys
 }
@@ -252,18 +252,6 @@ type Comparable[K any] interface {
 
 func Sort[K Comparable[K]](a []K) {
 	sort.Slice(a, func(i, j int) bool { return a[i].Compare(a[j]) < 0 })
-}
-
-func MapKeys[K comparable, E any](m map[K]E) []K {
-	if m == nil {
-		return nil
-	}
-
-	keys := []K{}
-	for k := range m {
-		keys = append(keys, k)
-	}
-	return keys
 }
 
 type ComparableMapKey[K any] interface {

@@ -3,7 +3,6 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    # nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.05"; # doesn
   };
 
   outputs = { self, nixpkgs, ... }:
@@ -17,7 +16,9 @@
       forAllSystems = nixpkgs.lib.genAttrs supportedSystems;
 
       # Nixpkgs instantiated for supported system types.
-      nixpkgsFor = forAllSystems (system: import nixpkgs { inherit system; });
+      nixpkgsFor = forAllSystems (system: import nixpkgs {
+        inherit system;
+      });
 
     in
     {
@@ -28,14 +29,14 @@
           inherit (pkgs) stdenv lib ;
         in
         {
-          ${pname} = pkgs.buildGoModule.override { go = pkgs.go_1_23; } rec {
+          ${pname} = pkgs.buildGoModule.override { go = pkgs.go_1_24; } rec {
             inherit pname self;
             version = lib.fileContents ./VERSION;
             gitCommit = if (self ? rev) then self.rev else self.dirtyRev;
             state = if (self ? rev) then "clean" else "dirty";
 
             # This vendorHash represents a derivative of all go.mod dependencies and needs to be adjusted with every change
-            vendorHash = "sha256-wZyfl1obOA/xP/bHcRK5TQArFt9HvzSS/M64KYAx2eY=";
+            vendorHash = "sha256-rokIdnSYakEOGTjtSzrt7Ayhwq11X4/W4EVclNWvgv0=";
 
             src = ./.;
 
@@ -47,13 +48,18 @@
             # "-X ocm.software/ocm/api/version.buildDate=1970-01-01T0:00:00+0000"
             ];
 
-            CGO_ENABLED = 0;
+            env = {
+              CGO_ENABLED = "0";
+            };
 
             subPackages = [
               "cmds/ocm"
-              "cmds/helminstaller"
+              "cmds/cliplugin"
               "cmds/demoplugin"
               "cmds/ecrplugin"
+              "cmds/helminstaller"
+              "cmds/subcmdplugin"
+              "cmds/jfrogplugin"
             ];
 
             nativeBuildInputs = [ pkgs.installShellFiles ];
@@ -86,7 +92,7 @@
         {
           default = pkgs.mkShell {
             buildInputs = with pkgs; [
-              go_1_23   # golang 1.23
+              go_1_24   # golang 1.24
               gopls     # go language server
               gotools   # go imports
               go-tools  # static checks
