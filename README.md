@@ -7,7 +7,7 @@
 
 The Open Component Model (OCM) is an open standard to describe software bills of delivery (SBOD). OCM is a technology-agnostic and machine-readable format focused on the software artifacts that must be delivered for software products.
 
-Check out the [the main OCM project web page](https://ocm.software) to find out what OCM offers you for implementing a secure software supply chain. It is your central entry point to all kind of OCM related [docs and guides](https://ocm.software/docs/overview/about), the [OCM specification](https://ocm.software/docs/overview/specification/) and all project [github repositories](https://github.com/open-component-model). It also offers a [Getting Started](https://ocm.software/docs/getting-started/) to quickly make your hands dirty with OCM, its toolset and concepts :smiley:
+Check out the [the main OCM project web page](https://ocm.software) to find out what OCM offers you for implementing a secure software supply chain. It is your central entry point to all kind of OCM related [docs and guides](https://ocm.software/docs/overview/about), the [OCM specification](https://github.com/open-component-model/ocm-spec/blob/main/README.md) and all project [github repositories](https://github.com/open-component-model). It also offers a [Getting Started](https://ocm.software/docs/getting-started/) to quickly make your hands dirty with OCM, its toolset and concepts :smiley:
 
 ## OCM Specifications
 
@@ -144,7 +144,7 @@ You can pass in the following arguments to override the predefined defaults:
 Please check [hub.docker.com](https://hub.docker.com/_/golang/tags?page=1&name=alpine) for possible version combinations.
 
 ```bash
-podman build -t ocm --build-arg GO_VERSION=1.25.1 --build-arg ALPINE_VERSION=3.21 --build-arg GO_PROXY=https://proxy.golang.org .
+podman build -t ocm --build-arg GO_VERSION=1.25.4 --build-arg ALPINE_VERSION=3.21 --build-arg GO_PROXY=https://proxy.golang.org .
 ```
 
 ### Chocolatey
